@@ -1,0 +1,64 @@
+---
+title: "RecSys Tutorial"
+author: "Amanda Peterson"
+format: 
+  revealjs:
+    scrollable: true
+    #theme: dark
+    footer: "SCADS 2022 RecSys Tutorial"
+    #logo: logo.png
+    transition: slide
+    background-transition: fade
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##  {background-iframe="https://amanda.rbind.io/"}
+
+## Definitions
+
+::: {.panel-tabset}
+
+### Collaborative Filtering 
+
+Model patterns across all users' [feedback history]{.underline}.
+
+-   **Pro**: Perform better than content filtering models when collaborative information is available.
+
+-   **Con**: Unable to make recommendations in [cold start]{.underline} scenarios where little history is available for new users or items.
+
+### Content Filtering
+
+Individualized models focus on a single user's feedback history (or a group of like users) + metadata associated with items.
+
+-   **Pro**: Able to handle new items.
+
+-   **Cons**: Models for each user (or group) are fit in isolation. Require large amounts of data for each user.
+
+### Hybrid
+
+Collaborative + Content Filtering
+
+-   **Pro**: Overcomes challenges of both types of filtering. User *and* item metadata (aka [side information]{.underline}) can be included.
+
+:::
+
+## Definitions
+
+**Explicit Feedback** **(or rating)**: Explicit rating given by the user for a product (e.g. star rating, thumbs up/dopwn)
+
+**Implicit Feedback**: Actions taken by the user which can be used infer preferences about products (e.g. click data, dwell time, purchases)
+
+## User-item Rating Array
+
+## User-Item Array as a Bipartite Graph
+
+## Dimension Reduction of the User-item Array
+
+## Recommender Technology Timeline
+
+Nick Petreath at the 2018 Spark + AI Summit
+
+## 
