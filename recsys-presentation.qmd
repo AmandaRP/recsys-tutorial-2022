@@ -47,11 +47,20 @@ Collaborative + Content Filtering
 
 ## Definitions
 
-**Explicit Feedback** **(or rating)**: Explicit rating given by the user for a product (e.g. star rating, thumbs up/dopwn)
+**Explicit Feedback** **(or rating)**: Explicit rating given by the user for a product (e.g. star rating, thumbs up/down)
+
+![](images/star_rating.jpg) 
 
 **Implicit Feedback**: Actions taken by the user which can be used infer preferences about products (e.g. click data, dwell time, purchases)
 
 ## User-item Rating Array
+
+![](images/user_item_matrix.png) 
+
+
+## User-item Rating Array (Implicit)
+
+![](images/user_item_matrix_implicit.png) 
 
 ## User-Item Array as a Bipartite Graph
 
@@ -59,6 +68,58 @@ Collaborative + Content Filtering
 
 ## Recommender Technology Timeline
 
-Nick Petreath at the 2018 Spark + AI Summit
+![](images/nick_pentreath_timeline.png) 
 
-## 
+[Presentation by Nick Pentreath at the 2018 Spark + AI Summit](https://youtu.be/y_TzOOCJqxI)
+
+
+
+## Scalable Models: Similarity
+
+![](images/nick_pentreath_timeline.png) 
+![](images/user_item_matrix_item_sim.png)
+
+## Recommender Technology Timeline
+
+![](images/nick_pentreath_timeline.png) 
+
+[Presentation by Nick Pentreath at the 2018 Spark + AI Summit](https://youtu.be/y_TzOOCJqxI)
+
+
+
+## Netflix Prize
+
+![](images/netflix_fig2.png)
+
+[Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf) by Koren, Bell, and Volinsky
+
+## NCF
+
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/ncf.png)
+
+
+
+## DeepFM
+
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DeepFM.png)
+
+
+## DCNV2
+
+
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/dcnv2.png)
+
+## DLRM
+
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/dlrm.png)
+
+## Evaluation Metrics for Recommendation Systems
+
+- Accuracy 
+- Beyond accuracy
+
+## News Recommendation
+
+
+
+
