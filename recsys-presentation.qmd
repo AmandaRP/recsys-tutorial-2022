@@ -3,7 +3,7 @@ title: "RecSys Tutorial"
 author: "Amanda Peterson"
 format: 
   revealjs:
-    scrollable: true
+    scrollable: false
     #theme: dark
     footer: "SCADS 2022 RecSys Tutorial"
     #logo: logo.png
@@ -66,7 +66,7 @@ Collaborative + Content Filtering
 
 ## Dimension Reduction of the User-item Array
 
-## Recommender Technology Timeline
+## Recommender Technology Timeline {transition="slide-in none-out" auto-animate=true}
 
 ![](images/nick_pentreath_timeline.png) 
 
@@ -74,24 +74,39 @@ Collaborative + Content Filtering
 
 
 
-## Scalable Models: Similarity
+## {transition="none" auto-animate=true}
 
-![](images/nick_pentreath_timeline.png) 
-![](images/user_item_matrix_item_sim.png)
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
 
-## Recommender Technology Timeline
+![](images/red_arrow.png){.absolute top=25 left=110 width="50" height="25"}
 
-![](images/nick_pentreath_timeline.png) 
+**Item-item similarity**: Can be computed using cosine or Jaccard similarity, for example.
 
-[Presentation by Nick Pentreath at the 2018 Spark + AI Summit](https://youtu.be/y_TzOOCJqxI)
-
+![](images/user_item_matrix_item_sim.png){fig-align="center" width=30%}
 
 
-## Netflix Prize
 
-![](images/netflix_fig2.png)
+## {transition="none" auto-animate=true}
+
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
+
+
+![](images/red_arrow.png){.absolute top=150 left=220 width="50" height="25"}
+
+
+![](images/netflix_fig2.png){fig-align="center" width=30%}
 
 [Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf) by Koren, Bell, and Volinsky
+
+
+## {transition="none" auto-animate=true}
+
+
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%}
+
+![](images/red_arrow.png){.absolute top=25 left=360 width="50" height="25"}
+
+
 
 ## NCF
 
@@ -115,8 +130,26 @@ Collaborative + Content Filtering
 
 ## Evaluation Metrics for Recommendation Systems
 
-- Accuracy 
-- Beyond accuracy
+![](images/evalrs.png){.absolute top=0 left=800 width="180" height="200"}
+
+::: {.panel-tabset}
+
+### Accuracy 
+
+::: {.incremental}
+  - Hit Rate at k (HR@k)
+  - Mean Average Precision at k (MAP@k)
+  - Normalized Discounted Cumulative Gain (NDCG@k)
+:::
+  
+### Beyond accuracy
+
+::: {.incremental}
+  - Diversity at k
+  - Novelty at k
+:::
+
+:::
 
 ## News Recommendation
 
