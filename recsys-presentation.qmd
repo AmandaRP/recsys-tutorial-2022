@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##  {background-iframe="https://amanda.rbind.io/"}
 
-## Definitions
+## Types of Recommender Systems
 
 ::: {.panel-tabset}
 
@@ -45,7 +45,7 @@ Collaborative + Content Filtering
 
 :::
 
-## Definitions
+## More Definitions
 
 **Explicit Feedback** **(or rating)**: Explicit rating given by the user for a product (e.g. star rating, thumbs up/down)
 
@@ -106,11 +106,11 @@ Collaborative + Content Filtering
 
 ![](images/red_arrow.png){.absolute top=25 left=360 width="50" height="25"}
 
-
+![](images/factorization_machine.png){fig-align="center" width=75%}
 
 ## NCF
 
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/ncf.png)
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/NCF.png)
 
 
 
@@ -122,11 +122,13 @@ Collaborative + Content Filtering
 ## DCNV2
 
 
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/dcnv2.png)
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DCN-V2.png)
 
 ## DLRM
 
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/dlrm.png)
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DLRM.png)
+## Deep Learning for RecSys: Additional Reading
+
 
 ## Evaluation Metrics for Recommendation Systems
 
@@ -134,12 +136,15 @@ Collaborative + Content Filtering
 
 ::: {.panel-tabset}
 
+
 ### Accuracy 
 
 ::: {.incremental}
   - Hit Rate at k (HR@k)
   - Mean Average Precision at k (MAP@k)
   - Normalized Discounted Cumulative Gain (NDCG@k)
+  - Mean Percentile Rank (MPR@k)
+  - MRR
 :::
   
 ### Beyond accuracy
@@ -154,5 +159,14 @@ Collaborative + Content Filtering
 ## News Recommendation
 
 
+## Guidance 
 
+*Are we really making much progress? A worrying analysis of recent neural recommendation approaches.*
 
+- Make code/analysis/tuning/data reproducible. 
+- Use as many baseline algorithms as possible (including non-NN), 
+- Use as many metrics as possible (some are better than others for different tasks)
+
+## Microsoft GitHub Reop
+
+https://github.com/microsoft/recommenders
