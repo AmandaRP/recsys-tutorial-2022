@@ -17,6 +17,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ##  {background-iframe="https://amanda.rbind.io/"}
 
+## Outline
+
+</br>
+
+- Definitions
+- Overview of "traditional" collaborative filtering models
+- Deep learning for recommendation
+- News Recommendations
+- Hands-on exercise
+
 ## Types of Recommender Systems
 
 ::: {.panel-tabset}
@@ -62,6 +72,14 @@ Collaborative + Content Filtering
 
 ![](images/user_item_matrix_implicit.png) 
 
+## Data Sparsity
+
+Data used to learn recommendations is notoriously sparse. 
+
+Examples:
+
+- 
+
 ## User-Item Array as a Bipartite Graph
 
 ## Dimension Reduction of the User-item Array
@@ -72,7 +90,7 @@ Collaborative + Content Filtering
 
 [Presentation by Nick Pentreath at the 2018 Spark + AI Summit](https://youtu.be/y_TzOOCJqxI)
 
-
+**2017 - 2022**: Advances in deep learning for recommender systems.
 
 ## {transition="none" auto-animate=true}
 
@@ -94,9 +112,13 @@ Collaborative + Content Filtering
 ![](images/red_arrow.png){.absolute top=150 left=220 width="50" height="25"}
 
 
-![](images/netflix_fig2.png){fig-align="center" width=30%}
+![](images/netflix_fig2.png){fig-align="center" width=40%}
+
+::: aside
 
 [Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf) by Koren, Bell, and Volinsky
+
+:::
 
 
 ## {transition="none" auto-animate=true}
@@ -110,23 +132,111 @@ Collaborative + Content Filtering
 
 ## NCF
 
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/NCF.png)
 
+:::: {.columns}
+
+::: {.column width="50%"}
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/NCF.png)
+:::
+
+::: {.column width="50%"}
+- Model for the 2017 TODO
+
+:::
+
+::::
+
+::: aside
+
+[Neural Collaborative Filtering](https://arxiv.org/pdf/1708.05031.pdf). 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He, Lizi Liao, Hanwang Zhang, Liqiang Nie, Xia Hu, and Tat-Seng Chua 
+
+:::
 
 
 ## DeepFM
 
+:::: {.columns}
+
+::: {.column width="60%"}
 ![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DeepFM.png)
+:::
+
+::: {.column width="40%"}
+- Model from Huawei
+- Example: 
+
+:::
+
+::::
+
+::: aside
+
+[DeepFM: A Factorization-Machine based Neural Network for CTR Prediction](https://www.ijcai.org/proceedings/2017/0239.pdf). 2017. Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelligence.  (IJCAI-17). Huifeng Guo, Ruiming Tang, Yunming Ye†, Zhenguo Li, Xiuqiang He.
+
+:::
+
+
+## DLRM
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DLRM.png){height="350" fig-align="center"}
+:::
+
+::: {.column width="40%"}
+Model from Facebook
+
+:::
+
+::::
+
+
+
+::: aside
+[Deep Learning Recommendation Model for Personalization and Recommendation Systems](https://arxiv.org/abs/1906.00091). 2019. arXiv. Maxim Naumov, Dheevatsa Mudigere, Hao-Jun Michael Shi, Jianyu Huang, Narayanan Sundaraman, Jongsoo Park, Xiaodong Wang, Udit Gupta, Carole-Jean Wu, Alisson G. Azzolini, Dmytro Dzhulgakov, Andrey Mallevich, Ilia Cherniavskii, Yinghai Lu, Raghuraman Krishnamoorthi, Ansha Yu, Volodymyr Kondratenko, Stephanie Pereira, Xianjie Chen, Wenlin Chen, Vijay Rao, Bill Jia, Liang, Xiong, Misha Smelyanskiy. 
+:::
+
+
 
 
 ## DCNV2
 
+:::: {.columns}
 
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DCN-V2.png)
+::: {.column width="40%"}
+![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DCN-V2.png){height="400"}
+:::
 
-## DLRM
+::: {.column width="60%"}
+Model from Google
 
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DLRM.png)
+:::
+
+::::
+
+::: aside
+
+[DCN V2: Improved Deep & Cross Network and Practical Lessons for Web-scale Learning to Rank Systems](https://arxiv.org/pdf/2008.13535.pdf). 2021. In Proceedings of the Web Conference 2021 (WWW '21). Association for Computing Machinery. Ruoxi Wang, Rakesh Shivanna, Derek Cheng, Sagar Jain, Dong Lin, Lichan Hong, and Ed Chi.
+
+:::
+
+
+## "Two tower" Sysetms
+
+## Explainability of Deep Learning RecSys Models
+
+![DCN-V2: Visualization of learned weight matrix in DCN-V2.
+Rows and columns represents real features. For (a), feature
+names were not shown for proprietary reasons; darker pixel
+represents larger weight in its absolute value. For (b), each
+block represents the Frobenius norm of each matrix block.](images/explain.png){height=300}
+
+## Additional Reading: Explainability of Deep Learning RecSys Models
+
+- paper
+
+
 ## Deep Learning for RecSys: Additional Reading
 
 
@@ -159,7 +269,13 @@ Collaborative + Content Filtering
 ## News Recommendation
 
 
-## Guidance 
+## Tricks of the Trade
+
+- **Ranking vs Retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates.
+- **Sampling negative examples**: Weight items by popularity. This will better penalize popular items that can be recommended 
+
+
+## Advice
 
 *Are we really making much progress? A worrying analysis of recent neural recommendation approaches.*
 
@@ -167,6 +283,9 @@ Collaborative + Content Filtering
 - Use as many baseline algorithms as possible (including non-NN), 
 - Use as many metrics as possible (some are better than others for different tasks)
 
-## Microsoft GitHub Reop
 
-https://github.com/microsoft/recommenders
+## Code 
+
+- Microsoft GitHub Repo (framework?): https://github.com/microsoft/recommenders
+- Tensorflow: 
+- R: 
