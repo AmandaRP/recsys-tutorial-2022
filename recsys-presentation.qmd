@@ -1,6 +1,7 @@
 ---
-title: "RecSys Tutorial"
+title: "Tutorial:<br>Recommender Systems"
 author: "Amanda Peterson"
+date: May 20, 2022
 format: 
   revealjs:
     scrollable: false
@@ -11,13 +12,12 @@ format:
     navigation-mode: linear
     transition: slide
     background-transition: fade
+    #logo: "images/thumb.png"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-##  {background-iframe="https://amanda.rbind.io/"}
 
 ## Outline
 
@@ -307,6 +307,28 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 
 # News Recommendation
 
+## MIND
+
+<br><br>
+
+We're working with the **M**icrosoft **N**ews **D**ataset this summer! 
+
+::: aside
+
+The paper is available at [https://aclanthology.org/2020.acl-main.331.pdf](https://aclanthology.org/2020.acl-main.331.pdf).
+
+:::
+
+## Unique Challenges of News Recommendation
+
+- High rate of "cold start" items (articles)
+- Short shelf-lives 
+- A user may get bored by a news feed with lack of diversity.
+- Overly personalized news feeds give can give a narrow view of the world.
+
+The last point can be a result of over-emphasis on prediction accuracy. Beyond-accuracy metrics may help.
+
+
 
 # Other Flavors of RecSys Recommenders
 
@@ -318,8 +340,17 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 
 ## Tricks of the Trade
 
-- **Ranking vs Retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates.
 - **Sampling negative examples**: Weight items by popularity. This will better penalize popular items that can be recommended 
+- **Ranking vs retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates..
+
+## More Tips
+
+Personalized recommendations in conjunction with other types of recommendations can provide a more satisfying experience.
+
+![](images/ui_sketch.png){fig-align='center'}
+
+![](images/red_arrow.png){.absolute top=507 left=355 width="50" height="25"}
+
 
 
 ## Advice
@@ -327,7 +358,7 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 *Are we really making much progress? A worrying analysis of recent neural recommendation approaches.*
 
 - Make code/analysis/tuning/data reproducible. 
-- Use as many baseline algorithms as possible (including non-NN), 
+- Use as many baseline algorithms as possible (including non-NN)
 - Use as many metrics as possible (some are better than others for different tasks)
 
 
