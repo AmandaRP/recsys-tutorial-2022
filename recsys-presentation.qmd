@@ -4,9 +4,11 @@ author: "Amanda Peterson"
 format: 
   revealjs:
     scrollable: false
+    chalkboard: true
     #theme: dark
     footer: "SCADS 2022 RecSys Tutorial"
     #logo: logo.png
+    navigation-mode: linear
     transition: slide
     background-transition: fade
 ---
@@ -130,13 +132,43 @@ Examples:
 
 ![](images/factorization_machine.png){fig-align="center" width=75%}
 
+# Deep Learning Models for Recommendation 
+
+## Matrix Factorization as a Deep Learning Model
+
+TODO: See Nick Petreath presentation
+
+## Wide and Deep
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![](images/wide_and_deep.png){height=300 fig-alight='center'}
+:::
+
+::: {.column width="40%"}
+
+- Model from Google 
+- Example: 
+
+:::
+::::
+
+::: aside
+
+[Wide & Deep Learning for Recommender Systems](https://arxiv.org/pdf/1606.07792.pdf). 2016. Heng-Tze Cheng et. al. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. 
+
+:::
+
+
+
 ## NCF
 
 
 :::: {.columns}
 
 ::: {.column width="50%"}
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/NCF.png)
+![](images/ncf.png){height=350}
 :::
 
 ::: {.column width="50%"}
@@ -148,9 +180,10 @@ Examples:
 
 ::: aside
 
-[Neural Collaborative Filtering](https://arxiv.org/pdf/1708.05031.pdf). 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He, Lizi Liao, Hanwang Zhang, Liqiang Nie, Xia Hu, and Tat-Seng Chua 
+[Neural Collaborative Filtering](https://arxiv.org/pdf/1708.05031.pdf). 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He et. al.
 
 :::
+
 
 
 ## DeepFM
@@ -158,7 +191,7 @@ Examples:
 :::: {.columns}
 
 ::: {.column width="60%"}
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DeepFM.png)
+![](images/deepfm.png){height=350}
 :::
 
 ::: {.column width="40%"}
@@ -171,7 +204,7 @@ Examples:
 
 ::: aside
 
-[DeepFM: A Factorization-Machine based Neural Network for CTR Prediction](https://www.ijcai.org/proceedings/2017/0239.pdf). 2017. Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelligence.  (IJCAI-17). Huifeng Guo, Ruiming Tang, Yunming Ye†, Zhenguo Li, Xiuqiang He.
+[DeepFM: A Factorization-Machine based Neural Network for CTR Prediction](https://www.ijcai.org/proceedings/2017/0239.pdf). 2017. Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelligence.  (IJCAI-17). Huifeng Guo et. al.
 
 :::
 
@@ -194,7 +227,7 @@ Model from Facebook
 
 
 ::: aside
-[Deep Learning Recommendation Model for Personalization and Recommendation Systems](https://arxiv.org/abs/1906.00091). 2019. arXiv. Maxim Naumov, Dheevatsa Mudigere, Hao-Jun Michael Shi, Jianyu Huang, Narayanan Sundaraman, Jongsoo Park, Xiaodong Wang, Udit Gupta, Carole-Jean Wu, Alisson G. Azzolini, Dmytro Dzhulgakov, Andrey Mallevich, Ilia Cherniavskii, Yinghai Lu, Raghuraman Krishnamoorthi, Ansha Yu, Volodymyr Kondratenko, Stephanie Pereira, Xianjie Chen, Wenlin Chen, Vijay Rao, Bill Jia, Liang, Xiong, Misha Smelyanskiy. 
+[Deep Learning Recommendation Model for Personalization and Recommendation Systems](https://arxiv.org/abs/1906.00091). 2019. arXiv. Maxim Naumov et. al. 
 :::
 
 
@@ -204,12 +237,13 @@ Model from Facebook
 
 :::: {.columns}
 
-::: {.column width="40%"}
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DCN-V2.png){height="400"}
+::: {.column width="60%"}
+![](images/dcnv2.png){height="400"}
 :::
 
-::: {.column width="60%"}
-Model from Google
+::: {.column width="40%"}
+- Model from Google
+- Cross Network: $x_{i+1} = x_0 (Wx_i + b) + x_i$
 
 :::
 
@@ -217,7 +251,7 @@ Model from Google
 
 ::: aside
 
-[DCN V2: Improved Deep & Cross Network and Practical Lessons for Web-scale Learning to Rank Systems](https://arxiv.org/pdf/2008.13535.pdf). 2021. In Proceedings of the Web Conference 2021 (WWW '21). Association for Computing Machinery. Ruoxi Wang, Rakesh Shivanna, Derek Cheng, Sagar Jain, Dong Lin, Lichan Hong, and Ed Chi.
+[DCN V2: Improved Deep & Cross Network and Practical Lessons for Web-scale Learning to Rank Systems](https://arxiv.org/pdf/2008.13535.pdf). 2021. In Proceedings of the Web Conference 2021 (WWW '21). Association for Computing Machinery. Ruoxi Wang et. al.
 
 :::
 
@@ -238,6 +272,9 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 
 
 ## Deep Learning for RecSys: Additional Reading
+
+
+# Evaluation
 
 
 ## Evaluation Metrics for Recommendation Systems
@@ -262,12 +299,22 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 ::: {.incremental}
   - Diversity at k
   - Novelty at k
+  - Catalog coverage
 :::
 
 :::
 
-## News Recommendation
 
+# News Recommendation
+
+
+# Other Flavors of RecSys Recommenders
+
+- Recurrent Neural Networks
+- Networks for Knowledge Graphs (diff than GNN?)
+
+
+# Final Thoughts
 
 ## Tricks of the Trade
 
