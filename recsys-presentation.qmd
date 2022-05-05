@@ -105,6 +105,8 @@ Examples:
 
 ## User-Item Array as a Bipartite Graph
 
+![Items represented as blue nodes (bottom). Users represented as pink nodes (top). User-item interactions represented by an edge. Edges colored according to a particular user feature.](images/bipartite.png)
+
 ## Recommender Technology Timeline {transition="slide-in none-out" auto-animate=true}
 
 ![](images/nick_pentreath_timeline.png) 
@@ -298,7 +300,7 @@ e.g., Gender x UserId, MovieId x UserId."
 ## Explainability of Deep Learning RecSys Models
 
 
-## "Two tower" Sysetms
+## "Two-tower" Sysetms
 
 ## Additional Reading: Explainability of Deep Learning RecSys Models
 
@@ -358,10 +360,20 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 
 ## NRMS
 
+:::: {.columns}
+
+::: {.column width="60%"}
+
 ![](images/nrms.png)
+:::
+
+::: {.column width="40%"}
 
 * Model from Microsoft
+* Best performing model in the [MIND paper](https://aclanthology.org/2020.acl-main.331.pdf).
 
+:::
+::::
 
 ::: aside
 [Neural News Recommendation with Multi-Head Self-Attention](https://wuch15.github.io/paper/EMNLP2019-NRMS.pdf). 2019. Wue et. al.
@@ -370,6 +382,17 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 ## The MIND Challenge
 
 ## Further Reading
+
+## Other Types of RecSys Models
+
+- Recurrent Neural Networks
+- Networks for Knowledge Graphs
+
+::: aside
+[A Comprehensive Survey of Knowledge Graph-Based
+Recommender Systems: Technologies, Development,
+and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Valdiviezo-Diaz. MDPI Information journal.
+:::
 
 
 # Evaluation
@@ -402,14 +425,6 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 :::
 
 
-
-
-# Other Flavors of RecSys Models
-
-- Recurrent Neural Networks
-- Networks for Knowledge Graphs (diff than GNN?)
-
-
 # Final Thoughts
 
 ## Tricks of the Trade
@@ -440,4 +455,16 @@ Personalized recommendations in conjunction with other types of recommendations 
 
 - Microsoft GitHub Repo: https://github.com/microsoft/recommenders
 - Tensorflow: https://www.tensorflow.org/recommenders
-- R: 
+- R Keras: https://github.com/AmandaRP
+
+## 
+
+::: {.r-fit-text}
+Questions?
+:::
+
+<center>
+
+Slides are available at: TODO
+
+</center>
