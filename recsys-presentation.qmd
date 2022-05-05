@@ -1,7 +1,7 @@
 ---
-title: "Tutorial:<br>Recommender Systems"
-author: "Amanda Peterson"
-date: May 20, 2022
+#title: "Tutorial:<br>Recommender Systems"
+#author: "Amanda Peterson"
+#date: May 20, 2022
 format: 
   revealjs:
     scrollable: false
@@ -19,14 +19,31 @@ format:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# 
+
+<center>
+
+::: {.r-fit-text}
+Tutorial: Recommender Systems
+:::
+
+Amanda Peterson
+
+May 20, 2022
+
+</center>
+
+![](images/thumb.png){.absolute top=200 right=125 height=250}
+
 ## Outline
 
 </br>
 
 - Definitions
-- Overview of "traditional" collaborative filtering models
+- Overview of "traditional" collaborative filtering & hybrid models
 - Deep learning for recommendation
-- News Recommendations
+- News recommendations
+- Evaluation metrics
 - Hands-on exercise
 
 ## Types of Recommender Systems
@@ -65,14 +82,14 @@ Collaborative + Content Filtering
 
 **Implicit Feedback**: Actions taken by the user which can be used infer preferences about products (e.g. click data, dwell time, purchases)
 
-## User-item Rating Array
+## User-item Rating Array {transition="slide-in none-out"}
 
-![](images/user_item_matrix.png) 
+![](images/user_item_matrix.png)
 
 
-## User-item Rating Array (Implicit)
+## User-item Rating Array (Implicit) {transition="none"}
 
-![](images/user_item_matrix_implicit.png) 
+![](images/user_item_matrix_implicit.png)
 
 ## Data Sparsity
 
@@ -80,11 +97,13 @@ Data used to learn recommendations is notoriously sparse.
 
 Examples:
 
-- 
-
-## User-Item Array as a Bipartite Graph
+- [MovieLens 25K](https://grouplens.org/datasets/movielens/): 99.75% sparse
+- [Micrsoft News Dataset](https://msnews.github.io/): 99.98% sparse
+- [Amazon](https://cseweb.ucsd.edu//~jmcauley/pdfs/www16a.pdf): > 99.99% sparse
 
 ## Dimension Reduction of the User-item Array
+
+## User-Item Array as a Bipartite Graph
 
 ## Recommender Technology Timeline {transition="slide-in none-out" auto-animate=true}
 
@@ -172,7 +191,7 @@ TODO: See Nick Petreath presentation
 :::
 
 ::: {.column width="50%"}
-- Model for the 2017 TODO
+- Previous RecSys Model for [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.)
 
 :::
 
@@ -218,7 +237,8 @@ TODO: See Nick Petreath presentation
 :::
 
 ::: {.column width="40%"}
-Model from Facebook
+- Model from Facebook
+- Current [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.) RecSys model
 
 :::
 
@@ -256,15 +276,29 @@ Model from Facebook
 :::
 
 
-## "Two tower" Sysetms
+## Explainability of DCN-V2 
 
-## Explainability of Deep Learning RecSys Models
+We can consider the weight matrix W in the first cross
+layer.
 
 ![DCN-V2: Visualization of learned weight matrix in DCN-V2.
 Rows and columns represents real features. For (a), feature
 names were not shown for proprietary reasons; darker pixel
-represents larger weight in its absolute value. For (b), each
+represents larger weight in its absolute value. Orange boxes 
+highlight notable feature crosses. For (b), each
 block represents the Frobenius norm of each matrix block.](images/explain.png){height=300}
+
+::: {.notes}
+From the DCN-V2 paper: "The off-diagonal block corresponds to crosses that are known to be important, suggesting the effectiveness of DCN-V2. The diagonal 
+block represents selfinteraction ($x^2$'s). Subplot (b) shows each block’s Frobenius norm and indicates some strong interactions learned, 
+e.g., Gender x UserId, MovieId x UserId."
+:::
+
+
+## Explainability of Deep Learning RecSys Models
+
+
+## "Two tower" Sysetms
 
 ## Additional Reading: Explainability of Deep Learning RecSys Models
 
@@ -272,6 +306,70 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 
 
 ## Deep Learning for RecSys: Additional Reading
+
+
+
+# News Recommendation
+
+## MIND
+
+<br><br>
+
+We're working with the **Mi**crosoft **N**ews **D**ataset this summer! 
+
+::: aside
+
+The paper is available at [https://aclanthology.org/2020.acl-main.331.pdf](https://aclanthology.org/2020.acl-main.331.pdf).
+
+:::
+
+## Challenges of News Recommendation {transition="slide-in none-out"}
+
+(@) **Severe cold start problem**: New articles posted continuously. Usefulness of articles diminishes quickly. 
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![Survival time distribution of news articles](images/survival_mind.png){fig-align='left'}
+:::
+
+::: {.column width="60%"}
+- Survival time of more than 84.5% news
+articles is less than two days.
+- Estimated using the time interval between
+first and last appearance time of articles in the MIND dataset.
+:::
+
+::::
+
+::: aside
+Image sourced from the [MIND paper](https://aclanthology.org/2020.acl-main.331.pdf).
+:::
+
+
+
+## Challenges of News Recommendation {transition="none"}
+
+(@) A user may get bored by a news feed with **lack of diversity**. Articles from a variety of topics may be more interesting.
+(@) **Overly personalized** news feeds give can give a narrow view of the world.
+
+The last point can be a result of over-emphasis on prediction accuracy. Beyond-accuracy metrics may help.
+
+
+## NRMS
+
+![](images/nrms.png)
+
+* Model from Microsoft
+
+
+::: aside
+[Neural News Recommendation with Multi-Head Self-Attention](https://wuch15.github.io/paper/EMNLP2019-NRMS.pdf). 2019. Wue et. al.
+:::
+
+## The MIND Challenge
+
+## Further Reading
 
 
 # Evaluation
@@ -290,47 +388,23 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
   - Hit Rate at k (HR@k)
   - Mean Average Precision at k (MAP@k)
   - Normalized Discounted Cumulative Gain (NDCG@k)
-  - Mean Percentile Rank (MPR@k)
-  - MRR
+  - Mean Reciprocal Rank (MRR)
 :::
   
 ### Beyond accuracy
 
 ::: {.incremental}
-  - Diversity at k
-  - Novelty at k
-  - Catalog coverage
+  - Diversity at k (Div@k)
+  - Novelty at k (Nov@k)
+  - Catalog coverage (CC)
 :::
 
 :::
 
 
-# News Recommendation
-
-## MIND
-
-<br><br>
-
-We're working with the **M**icrosoft **N**ews **D**ataset this summer! 
-
-::: aside
-
-The paper is available at [https://aclanthology.org/2020.acl-main.331.pdf](https://aclanthology.org/2020.acl-main.331.pdf).
-
-:::
-
-## Unique Challenges of News Recommendation
-
-- High rate of "cold start" items (articles)
-- Short shelf-lives 
-- A user may get bored by a news feed with lack of diversity.
-- Overly personalized news feeds give can give a narrow view of the world.
-
-The last point can be a result of over-emphasis on prediction accuracy. Beyond-accuracy metrics may help.
 
 
-
-# Other Flavors of RecSys Recommenders
+# Other Flavors of RecSys Models
 
 - Recurrent Neural Networks
 - Networks for Knowledge Graphs (diff than GNN?)
@@ -364,6 +438,6 @@ Personalized recommendations in conjunction with other types of recommendations 
 
 ## Code 
 
-- Microsoft GitHub Repo (framework?): https://github.com/microsoft/recommenders
-- Tensorflow: 
+- Microsoft GitHub Repo: https://github.com/microsoft/recommenders
+- Tensorflow: https://www.tensorflow.org/recommenders
 - R: 
