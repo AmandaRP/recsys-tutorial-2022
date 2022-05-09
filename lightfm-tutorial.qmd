@@ -2,19 +2,19 @@
 title: "Application of LightFM to Microsoft News Dataset"
 date: now
 date-format: "hh:mm:ss ZZ, dddd, MMMM D, YYYY"
-execute: 
+execute:
   eval: false
 format:
   html:
     self-contained: true
     minimal: true
+    theme: cosmo
     toc: true
     toc-float: true
-    number-sections: true
     code-copy: true
     code-fold: true
-    theme: cosmo
-#editor: visual
+    code-tools: true
+    number-sections: true
 references:
 - type: paper-conference
   id: kula-2015
@@ -94,9 +94,11 @@ from os.path import join as path_join
 from random import seed as set_seed, random, sample
 from scipy.stats import rankdata
 from sklearn.metrics import ndcg_score
+from sklearn.preprocessing import normalize
 import itertools as it
 import json
 import lightfm
+import matplotlib.pyplot as plt
 import multiprocessing
 import numpy as np
 import pandas as pd
@@ -107,15 +109,25 @@ import tempfile
 import zipfile
 ```
 
+
+Let's define the random seed now for the sake of reproducibility.
+
+```{python}
+#| code-fold: show
+#| code-summary: "Set seed"
+seed = 1
+set_seed(seed)
+```
+
 # Fetch data
 
 MIND is available for download. It comprises a small variant and a large
 variant. The former is a small random sub-sample of the latter. Both
-variants each comprise a training set and a validation set. The large
-variant additionally comprises an unlabeled testing set. Since this
+variants each comprise a training set and a validation set and the large
+variant comprises in addition an unlabeled testing set. Since this
 official testing set is unlabeled, it won't be of much use to us, but
 we'll make do with the remaining subsets. We can retrieve the data by
-calling `fetch_mind`, which is defined below.
+calling `fetch_mind()`, which is defined below.
 
 ```{python}
 #| code-summary: "Define function to fetch data"
@@ -130,8 +142,8 @@ def fetch_mind(
     root="https://mind201910small.blob.core.windows.net/release"
 ):
     """
-    Fetch Microsoft News Dataset.  In particular, download compressed
-    files and de-compress them into similarly named sub-directories
+    Fetch Microsoft News Dataset from Internet.  In particular, download
+    compressed files and de-compress them into similarly named sub-directories
     in the current directory.
     """
     for f in files:
@@ -154,18 +166,24 @@ def fetch_mind(
                 with zipfile.ZipFile(tmpfil) as zipfil:
                     zipfil.extractall(dstdir)
         except OSError as e:
-            raise RuntimeError("failed to decompress file `{}': {}".\
+            raise RuntimeError("failed to decompress file `{}': {}".
                 format(f, e))
 ```
 
-# Prepare data
-
-Fetch the data:
+For example, the following chunk if evaluated will attempt to fetch the
+small variant's training and validation sets.
 
 ```{python}
-#| code-summary: "Fetch data"
-fetch_mind()
+#| eval: false
+#| code-summary: "Fetch data example"
+fetch_mind([
+    "MINDsmall_train.zip",
+    "MINDsmall_dev.zip"
+])
 ```
+
+
+# Prepare data
 
 Now that we have a local copy of MIND (or of a subset of it), let's
 process it for analysis.
@@ -175,39 +193,37 @@ process it for analysis.
 Each official partition of MIND comprises:
 
 -   behaviors data (file named "behaviors.tsv")
+
 -   news data ("news.tsv")
+
 -   embeddings of named entities ("entity_embedding.vec")
+
 -   embeddings of relations of named entities
     ("relation_embedding.vec").
 
-Detailed information about this data is available
+Detailed information about these data is available
 [elsewhere](https://github.com/msnews/msnews.github.io/blob/811c3da00f028ad7737d8c8e131770e04ffe6346/assets/doc/introduction.md),
 but a few details will be repeated here for the sake of this tutorial.
 
 ### Behaviors data
 
-The behaviors data is comprised of users' implicit feedback about news
-items in the form of history logs and impressions logs. MIND was
+The behaviors data comprise users' implicit feedback about news items in
+the form of history logs and so-called impressions logs. MIND was
 assembled from click-activity that occurred over several weeks and the
 history log is a list of items that a user is known to have consumed
 during an initial portion this period. The impressions log is a list of
-items that were displayed to a user at a particular time (after the
-training period) and the user's associated implicit feedback.
+items that were displayed to a user at a particular time afterward
+together with the user's implicit feedback about these items.
+
+```{python}
+#| code-summary: "Name of behaviors file"
+behaviors = "behaviors.tsv"
+```
 
 ```{python}
 #| code-summary: "Define function to read behaviors data"
-behaviors = "behaviors.tsv"
-
 def get_behaviors(path):
     """Read behaviors data from file, return as DataFrame."""
-    def convert_impr(x):
-        """for converting `impressions' column of behaviors data-set"""
-        xs = x.split()
-        ys = [None] * len(xs)
-        for i, xi in enumerate(xs):
-            y = xi.rsplit("-", 1)
-            ys[i] = [y[0], int(y[1])]
-        return ys
     pdargs = {
         "sep": "\t",
         "header": None,
@@ -219,7 +235,8 @@ def get_behaviors(path):
         "parse_dates": ["time"],
         "converters": {
             "history": lambda x: x.split(),
-            "impr":    convert_impr,
+            "impr":    lambda s: [(item, int(label)) for x in s.split()
+                           for item, label in [x.rsplit("-", 1)]],
         },
     }
     with open(path) as f:
@@ -230,15 +247,18 @@ def get_behaviors(path):
 
 ### News data
 
-The news data contains metadata about the news items that may be present
-in the behaviors data, such as category, sub-category and named
-entities.
+The news data comprise metadata about the news items that may be present
+in the behaviors data's history logs and impressions logs, such as
+category, sub-category and named entities.
+
+```{python}
+#| code-summary: "Set name of news data file"
+news = "news.tsv"
+```
 
 ```{python}
 #| code-summary: "Define function to read news data"
-news = "news.tsv"
-
-def get_news(path="news.tsv"):
+def get_news(path):
     """Read news data from file, return as DataFrame."""
     # pd.read_csv parses MINDsmall_train/news.tsv incorrectly, so we'll do it
     # more manually.
@@ -253,9 +273,9 @@ def get_news(path="news.tsv"):
             assert len(x) == len(conv),\
                 "expected {} fields, observed {} in record {}: `{}'".\
                     format(len(cn), len(x), lineno, line)
-            try: rec.append([ conv[i](xi) for i, xi in enumerate(x) ])
+            try: rec.append([conv[i](xi) for i, xi in enumerate(x)])
             except json.decoder.JSONDecodeError as e:
-                print("failed to decode JSON in record {}: {}".\
+                print("failed to decode JSON in record {}: {}".
                     format(lineno, e), file=sys.stderr)
     return pd.DataFrame.from_records(rec, columns=cn)
 ```
@@ -263,12 +283,15 @@ def get_news(path="news.tsv"):
 ### Entity-embeddings data
 
 The entity-embeddings data are one-hundred dimensional embeddings of
-some of the named entities in the news data.
+some of the news data's named entities.
+
+```{python}
+#| code-summary: "Set file name of entity embeddings file"
+entity_embeddings = "entity_embedding.vec"
+```
 
 ```{python}
 #| code-summary: "Define function to read entity embeddings"
-entity_embeddings = "entity_embedding.vec"
-
 def get_embeddings(path):
     """Read embeddings data from file, return as DataFrame."""
     cn = ["id"] + ["x" + str(i) for i in range(100)]
@@ -280,9 +303,9 @@ def get_embeddings(path):
             assert len(x) == len(conv),\
                 "expected {} fields, observed {} in record {}: `{}'".\
                     format(len(cn), len(x), lineno, line)
-            try: rec.append([ conv[i](xi) for i, xi in enumerate(x) ])
+            try: rec.append([conv[i](xi) for i, xi in enumerate(x)])
             except ValueError as e:
-                print("failed to decode number in record {}: {}".\
+                print("failed to decode number in record {}: {}".
                     format(lineno, e), file=sys.stderr)
     return pd.DataFrame.from_records(rec, columns=cn)
 ```
@@ -290,30 +313,25 @@ def get_embeddings(path):
 ### Relation-embeddings data
 
 The relation-embeddings data are one-hundred dimensional embeddings of
-knowledge-graph relations of some of the named entities in the news
-data. We won't do anything with them here.
+knowledge-graph relations of some of the news data's named entities. We
+won't do anything with them here.
 
 ## Read data
 
 ```{python}
-#| code-summary: "Choose data set (or subset)"
-dir_training   = "MINDsmall_train"
-dir_validation = None
-dir_testing    = None
+#| code-summary: "Select data sets"
+dir_training = "MINDsmall_train"
+dir_testing  = "MINDsmall_dev"
 ```
 
-Let's fetch our training set from the directory `dir_training`, our
-validation data from `dir_validation` and our testing set from
-`dir_testing`. If `dir_validation` is `None` then we'll allocate for
-validation a random subset of the training set. If `dir_testing` is
-`None` then we'll use the validation set for testing.
+Let's fetch our training set from the directory `dir_training` and our
+testing set from `dir_testing`. We'll allocate later a subset of the
+training set for validation.
 
 ```{python}
 #| code-summary: "Fetch data"
 data = {}
 dirs = {"tr": dir_training}
-if dir_validation is not None:
-    dirs["va"] = dir_validation
 if dir_testing is not None:
     dirs["te"] = dir_testing
 for k, d in dirs.items():
@@ -326,56 +344,56 @@ for k, d in dirs.items():
 Let's glimpse the training set.
 
 ```{python}
-#| code-summary: "Glimpse training set"
+#| code-summary: "Glimpse of training set"
 for k, v in data["tr"].items():
     print("{}:\n\tshape: {}\n\tcolumns: {}".format(k, v.shape, v.columns))
 ```
 
-As mentioned previously, we'll partition the training set, if a
-validation set hasn't been supplied. Our partitioning scheme will
-attempt to reserve for validation `100 * prob_va` percent of each user's
-training data. When this percentage is less than one, we will randomly
-choose the partition into which to put the data.
+## Partition training set
+
+As mentioned previously, we'll partition the training set into two to
+reserve some data for validation. Our partitioning scheme will reserve
+for validation the training-set data from the most recent day on which
+training data were collected; the remainder will be retained for
+training during hyperparameter-tuning. In addition, we'll retain the
+complete training set for training a final model after having completed
+the hyperparameter-tuning.
+
+```{python}
+#| code-summary: "Inspect date range of original training set"
+print(data["tr"]["beha"]["time"].agg([min, max]))
+```
 
 ```{python}
 #| code-summary: "Partition the training set"
-seed = 1
-set_seed(seed)
-prob_va = 0.2
-if "va" not in data:
-    i_tr, i_va = [], []
-    for u, udat in data["tr"]["beha"].groupby("user_id"):
-        J = set(udat.index)
-        assert len(J) == udat.shape[0],\
-            "duplicate indices for user {}".format(u)
-        # We want to put at least one observation on `u' into each
-        # partition.  If this is impossible then randomly choose the
-        # partition that receives the observation as per `prob_va'.
-        k = round(prob_va * len(J))
-        if k < 1:
-            k = 1 if random() <= prob_va else 0
-        j_va = sample(list(J), k=k)
-        i_va.extend(j_va)
-        i_tr.extend(J - set(j_va))
-    data["va"] = {
-        "beha":       data["tr"]["beha"].iloc[sorted(i_va)],
-        "is_derived": True, # We'll use this later to avoid duplicate work.
-    }
-    data["tr"]["beha"] = data["tr"]["beha"].iloc[sorted(i_tr)]
-print("{} rows in training set, {} in validation set".\
-    format(data["tr"]["beha"].shape[0], data["va"]["beha"].shape[0]))
+
+# Initialize validation data from training data
+data["va"] = dict(data["tr"])
+
+# Copy full training set for training final model after tuning
+# hyper-parameters.
+data["tr_full"] = dict(data["tr"])
+
+# Reserve for validation the data associated with last day of training period.
+t0 = data["tr_full"]["beha"]["time"].max() - pd.Timedelta("1 day")
+p = data["tr_full"]["beha"]["time"] <= t0
+data["tr"]["beha"] = data["tr_full"]["beha"].loc[p]
+data["va"]["beha"] = data["tr_full"]["beha"].loc[~p]
+for k in ["tr", "va"]:
+    print("{}-set behaviors table comprises {} records".format(k,
+        data[k]["beha"].shape[0]))
 ```
 
 ## Assemble interactions matrices
 
-For each subset of the data-set we'll require a sparse matrix (in
-coordinate-list format) of user-item interactions whose rows correspond
+For each subset of the data-set we'll require a sparse matrix in
+coordinate-list format of user-item interactions whose rows correspond
 to users, whose columns correspond to items and whose entries specify
 the users' implicit feedback about the items.
 
 ```{python}
 #| code-summary: "Create sparse matrices"
-for k in data:
+for k in data.keys():
     users, items, ratings = [], [], []
     for row in data[k]["beha"].itertuples():
         for item, rating in row.impr:
@@ -387,12 +405,14 @@ for k in data:
     data[k]["ratings"] = ratings
 ```
 
-After having identified all user-item-rating triples in the data-set, we
-can now establish the correspondence between users and rows and between
-items and columns.
+The correspondence between users and rows and between items and columns
+must be the same for all partitions of the data-set, so that for example
+user $u$ is associated with row $r$ and item $i$ with column $c$
+irrespective of whether $(u,i)$ comes from the training set, from the
+validation set or from the testing set.
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Create user map"
 user_map = {}
 for v in data.values():
     for x in v["users"]:
@@ -401,7 +421,7 @@ print("{} users present in the data-set".format(len(user_map)))
 ```
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Create item map"
 item_map = {}
 for v in data.values():
     for x in v["items"]:
@@ -409,7 +429,8 @@ for v in data.values():
 print("{} items present in the data-set".format(len(item_map)))
 ```
 
-Thus, we're ready to assemble the interactions matrices.
+Having established these correspondences, we're ready to assemble the
+interactions matrices from the user-item-rating triples.
 
 ```{python}
 #| code-summary: "Assemble interaction matrices"
@@ -419,8 +440,9 @@ for k, v in data.items():
         [user_map[x] for x in v["users"]],
         [item_map[x] for x in v["items"]]
     )), shape=shape)
-    print("{}-set interactions matrix has {} non-zero entries".\
-        format(k, data[k]["ui"].count_nonzero()))
+    print(("{}-set interactions matrix has {} rows, {} columns and {} non-"
+        + "zero entries").format(k, *data[k]["ui"].shape,
+        data[k]["ui"].count_nonzero()))
 ```
 
 We needn't store explicit zeros in the training-set interactions matrix:
@@ -430,11 +452,13 @@ sampling of implicit negatives.
 ```{python}
 #| code-summary: "Eliminate zeros"
 data["tr"]["ui"].eliminate_zeros()
+data["tr_full"]["ui"].eliminate_zeros()
 ```
 
 However, we do wish to retain any explicit zeros found in the validation
 and testing sets to retain the identity of the specific user-item pairs
 for which to make predictions during validation and during testing.
+
 
 ## Assemble features matrices
 
@@ -451,9 +475,9 @@ on these features.
 We'll start with user-features. Each partition of the data-set will have
 a user-features matrix, which we'll assemble by blocks for ease of
 organization. All blocks of a given partition will share the mapping of
-users to rows, but each will have its own mapping of features to columns
-that will be shared with the corresponding blocks of the other
-partitions.
+users to rows established for the interactions matrices, but each will
+have its own mapping of features to columns that will be shared with the
+corresponding blocks of the other partitions.
 
 ```{python}
 #| code-summary: "Create dictionaries"
@@ -462,10 +486,15 @@ uft_map = {k: {} for k in data.keys()}
 ```
 
 Specifically, in the user-features matrix we'll facilitate inclusion of
-the features in `which_user_ft`.
+the features named in `which_user_ft`. Specify
+`user' alone here, along with`item' alone later on in `which_item_ft`,
+to use LightFM for traditional collaborative filtering.
 
 ```{python}
 #| code-summary: "Choose user features"
+#| 
+# Comment out any of the entries of `which_user_ft' to exclude these from the
+# features matrix.
 which_user_ft = [
     "user",
     "history",
@@ -480,7 +509,7 @@ for each user present in the data-set.
 blk_name = "user"
 if blk_name in which_user_ft:
     blk = sp.eye(len(user_map), format="coo")
-    print("block `{}' has {} rows, {} columns, {} non-zero entries".\
+    print("block `{}' has {} rows, {} columns, {} non-zero entries".
         format(blk_name, *blk.shape, blk.count_nonzero()))
     for s in data:
         uft_blk[s][blk_name] = blk
@@ -497,7 +526,7 @@ history block associates the same rows and users and the same columns
 and items as the validation set's history block.
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Define function for getting feature blocks"
 def get_ft_blk(data, get_ijv, row_map):
     ijv = [get_ijv(x) for x in data]
     col_map = {}
@@ -515,8 +544,8 @@ def get_ft_blk(data, get_ijv, row_map):
 The rows of the history block will correspond to users and the columns
 to the items present in the users' histories. For each user, the items
 present in the user's history log will receive a weight of one divided
-by the number of items in the user's log so that each non-zero row of
-the block sums to one.
+by the total number of items in the user's log so that each non-zero row
+of the block sums to one.
 
 ```{python}
 #| code-summary: "TODO"
@@ -530,56 +559,70 @@ if blk_name in which_user_ft:
             J.extend(xs)
             V.extend(1/len(xs) for x in xs)
         return (I, J, V)
-    # This bit here serves to avoid duplicate work: We needn't assemble
-    # separate history blocks for partitions of the data-set that we've derived
-    # from others (such as from the training set); instead, we'll later merely
-    # store a duplicate reference to the appropriate block.
-    beha = {k: v["beha"] for k, v in data.items() if "is_derived" not in v}
     blks, col_map = get_ft_blk(
-        data    = beha.values(),
+        data    = (x["beha"] for x in data.values()),
         get_ijv = get_ijv,
         row_map = user_map
     )
-    for s, b in zip(beha.keys(), blks):
+    for s, b in zip(data.keys(), blks):
         print(("{}-set block `{}' has {} rows, {} columns, {} non-"
            + "zero entries").format(s, blk_name, *b.shape, b.count_nonzero()))
         uft_blk[s][blk_name] = b
         uft_map[s][blk_name] = col_map
 ```
 
-We can now combine the blocks.
+We can now combine the blocks of the user-features matrices.
 
 ```{python}
-#| code-summary: "Combine blocks"
+#| code-summary: "Combine blocks of the user-features"
 for k in data.keys():
-    data[k]["uft"] = sp.hstack([
-        uft_blk[k].get(x, uft_blk["tr"][x]) for x in which_user_ft
-    ], format="csr")
+    data[k]["uft"] = sp.hstack([x for x in uft_blk[k].values()], format="csr")
     print(("{}-set user-features matrix has {} rows, {} columns, "
         + "{} non-zero entries").format(k, *data[k]["uft"].shape,
         data[k]["uft"].count_nonzero()))
+    if data[k]["uft"].shape == (0, 0):
+        data[k]["uft"].shape = None
 ```
+
+We might want to normalize the non-zero values of the matrices (as does
+`lightfm.Dataset.build_user_features`).
+
+```{python}
+#| code-summary: "Normalize non-zero values"
+for k in data.keys():
+    if data[k]["uft"] is not None:
+        data[k]["uft"] = normalize(data[k]["uft"].tocsr(), norm="l1",
+            copy=False)
+```
+
 
 ### Item-features
 
-Next we process the item-features. Each partition of the data-set will
-have an item-features matrix, which we'll assemble by blocks like we've
-done with the user-features. All blocks of a given partition will share
-the mapping of items to rows, but each will have its own mapping of
-features to columns that will be shared with the corresponding blocks of
-the other partitions.
+Next come the item-features. Each partition of the data-set will have an
+item-features matrix, which we'll assemble by blocks like we've done
+with the user-features. All blocks of a given partition will share the
+mapping of items to rows established between items and columns for the
+interactions matrices, but each will have its own mapping of features to
+columns that will be shared with the corresponding blocks of the other
+partitions.
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Create dictionaries"
 ift_blk = {k: {} for k in data.keys()}
 ift_map = {k: {} for k in data.keys()}
 ```
 
 Specifically, in the item-features matrix we'll facilitate inclusion of
-the features in `which_item_ft`.
+the features named in `which_item_ft`.  Note that this isn't an exhaustive
+list of the item-features that one might possibly include; consider, for
+example, that we could (but won't) incorporate the text of items' titles
+and abstracts with some more complex pre-processing.
 
 ```{python}
 #| code-summary: "Choose item features"
+
+# Comment out any of the entries of `which_item_ft' to exclude these from the
+# features matrix.
 which_item_ft = [
     "item",
     "cat",
@@ -599,32 +642,31 @@ for each item present in the data-set.
 blk_name = "item"
 if blk_name in which_item_ft:
     blk = sp.eye(len(item_map), format="coo")
-    print("block `{}' has {} rows, {} columns, {} non-zero entries".\
+    print("block `{}' has {} rows, {} columns, {} non-zero entries".
         format(blk_name, *blk.shape, blk.count_nonzero()))
     for s in data:
         ift_blk[s][blk_name] = blk
         ift_map[s][blk_name] = item_map
 ```
 
-Most of the item-features data resides in the news tables. This table
-may contain items that aren't present in any of the behaviors tables,
+Most of the item-features data resides in the news tables. These tables
+may comprise items that aren't present in any of the behaviors tables,
 which we may as well ignore.
 
 ```{python}
 #| code-summary: "TODO"
 for k, v in data.items():
-    if "news" in v:
-        data[k]["news"] = v["news"].loc[
-            v["news"]["item"].isin(item_map.keys())
-        ]
-        assert not any(data[k]["news"]["item"].duplicated()),\
-            "duplicate items in {}-set news data".format(k)
+    data[k]["news"] = v["news"].loc[
+        v["news"]["item"].isin(item_map.keys())
+    ]
+    assert not any(data[k]["news"]["item"].duplicated()),\
+        "duplicate items in {}-set news data".format(k)
 ```
 
-The category and sub-category blocks will align items in rows and their
-categories and sub-categories in columns. There's at exactly one
-category and one sub-category associated with each item, each of which
-will be given a weight of one.
+The category and sub-category blocks will align items in rows (as
+previously stated) and their categories and sub-categories in columns.
+There's exactly one category and one sub-category associated with each
+item, each of which will be given a weight of one.
 
 ```{python}
 #| code-summary: "TODO"
@@ -638,17 +680,12 @@ for blk_name in ["cat", "subcat"]:
             J.append(getattr(row, blk_name))
             V.append(1)
         return (I, J, V)
-    # This bit here serves to avoid duplicate work: We needn't assemble
-    # separate blocks for partitions of the data-set that we've derived from
-    # others (such as from the training set); instead, we'll later merely
-    # store a duplicate reference to the appropriate block.
-    news = {k: v["news"] for k, v in data.items() if "is_derived" not in v}
     blks, col_map = get_ft_blk(
-        data    = news.values(),
+        data    = (x["news"] for x in data.values()),
         get_ijv = get_ijv,
         row_map = item_map
     )
-    for s, b in zip(news.keys(), blks):
+    for s, b in zip(data.keys(), blks):
         print(("{}-set block `{}' has {} rows, {} columns, {} non-"
            + "zero entries").format(s, blk_name, *b.shape, b.count_nonzero()))
         ift_blk[s][blk_name] = b
@@ -662,7 +699,7 @@ named entities per title/abstract per item, which we'll weight equally
 so that the weights of each item's named entities sum to one.
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Assemble blocks for named entities from item titles and abstracts"
 for k in ["ent_t", "ent_a"]:
     blk_name = "label_" + k
     if blk_name not in which_item_ft:
@@ -678,17 +715,12 @@ for k in ["ent_t", "ent_a"]:
                 J.append(x)
                 V.append(1 / n)
         return (I, J, V)
-    # This bit here serves to avoid duplicate work: We needn't assemble
-    # separate blocks for partitions of the data-set that we've derived from
-    # others (such as from the training set); instead, we'll later merely
-    # store a duplicate reference to the appropriate block.
-    news = {k: v["news"] for k, v in data.items() if "is_derived" not in v}
     blks, col_map = get_ft_blk(
-        data    = news.values(),
+        data    = (x["news"] for x in data.values()),
         get_ijv = get_ijv,
         row_map = item_map
     )
-    for s, b in zip(news.keys(), blks):
+    for s, b in zip(data.keys(), blks):
         print(("{}-set block `{}' has {} rows, {} columns, {} non-"
            + "zero entries").format(s, blk_name, *b.shape, b.count_nonzero()))
         ift_blk[s][blk_name] = b
@@ -704,7 +736,7 @@ case, the embeddings will first be summed; and, in any case, the blocks'
 non-zero rows will be scaled to each have unit length.
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Assemble blocks for the one-hundred dimensional embeddings of named entities"
 for k in ["ent_t", "ent_a"]:
     blk_name = "embedding_" + k
     if blk_name not in which_item_ft:
@@ -712,45 +744,59 @@ for k in ["ent_t", "ent_a"]:
     def get_ijv(data):
         I, J, V = [], [], []
         news, ents = data["news"], data["ents"]
-        for row in news.itertuples():
-            ws = [x.get("WikidataId") for x in getattr(row, k)]
-            p = ents["id"].isin(w for w in ws if w is not None)
-            if sum(p) == 0:
-                continue
-            vs = ents.loc[p].drop(columns="id").sum(axis=0)
-            vs /= sqrt(vs.pow(2).sum())
-            for i, v in enumerate(vs):
-                I.append(row.item)
-                J.append(i)
-                V.append(v)
+        ents_by_item = news[["item", k]].assign(
+            wdid=lambda row: [
+                list(filter(None, (x.get("WikidataId") for x in xs)))
+                    for xs in row[k]
+            ]
+        ).explode("wdid").merge(
+            ents, left_on="wdid", right_on="id"
+        ).drop(columns=["id", "wdid", k]).groupby("item").sum().transform(
+            lambda x: x / sqrt(x.dot(x)), axis=1
+        )
+        for ix, x in np.ndenumerate(ents_by_item.to_numpy()):
+            I.append(ents_by_item.index[ix[0]])
+            J.append(ents_by_item.columns[ix[1]])
+            V.append(x)
         return (I, J, V)
-    _data = {k: v for k, v in data.items() if "is_derived" not in v}
     blks, col_map = get_ft_blk(
-        data    = _data.values(),
+        data    = data.values(),
         get_ijv = get_ijv,
         row_map = item_map
     )
-    for s, b in zip(_data.keys(), blks):
+    for s, b in zip(data.keys(), blks):
         print(("{}-set block `{}' has {} rows, {} columns, {} non-"
            + "zero entries").format(s, blk_name, *b.shape, b.count_nonzero()))
         ift_blk[s][blk_name] = b
         ift_map[s][blk_name] = col_map
 ```
 
-We can now combine the blocks of item-features.
+We can now combine the blocks of the item-features matrices.
 
 ```{python}
-#| code-summary: "Combine item feature blocks"
+#| code-summary: "Combine blocks of item-features matrices"
 for k in data.keys():
-    data[k]["ift"] = sp.hstack([
-        ift_blk[k].get(x, ift_blk["tr"][x]) for x in which_item_ft
-    ], format="csr")
+    data[k]["ift"] = sp.hstack([x for x in ift_blk[k].values()], format="csr")
     print(("{}-set item-features matrix has {} rows, {} columns, "
         + "{} non-zero entries").format(k, *data[k]["ift"].shape,
         data[k]["ift"].count_nonzero()))
+    if data[k]["ift"].shape == (0, 0):
+        data[k]["ift"].shape = None
 ```
 
-# Learn mapping
+We might want to normalize the non-zero values of the matrices (as does
+`lightfm.Dataset.build_item_features`).
+
+```{python}
+#| code-summary: "Normalize non-zero values"
+for k in data.keys():
+    if data[k]["ift"] is not None:
+        data[k]["ift"] = normalize(data[k]["ift"].tocsr(), norm="l1",
+            copy=False)
+```
+
+
+# Train Recommender Model
 
 We're ready to train a recommender by means of LightFM. There are many
 hyper-parameters to specify, such as the dimension of the latent feature
@@ -762,10 +808,11 @@ therefore assume lightfm's default values.
 #| code-fold: show
 #| code-summary: "Set hyper-parmaters"
 hyper = {
-    "dim":      15,
+    "dim":      16,
     "loss":     "warp-kos",
-    "iter":     50,
-    "patience": 5,
+    "iter":     100,
+    "rate":     0.05,
+    "patience": 10,
 }
 ```
 
@@ -775,6 +822,7 @@ hyper = {
 model = lightfm.LightFM(
     no_components = hyper["dim"],
     loss          = hyper["loss"],
+    learning_rate = hyper["rate"],
     random_state  = seed
 )
 ```
@@ -782,9 +830,46 @@ model = lightfm.LightFM(
 We'll implement early-stopping to facilitate tuning. If this is enabled,
 training will cease early after `hyper["patience"]` iterations of
 training that don't improve the recommender's best validation-set
-performance as per the stopping criterion `hyper["stop_crit"]`. Note
-that training will likely take considerably longer if early-stopping is
-enabled.
+performance as per the stopping criterion `hyper["stop_crit"]` (defined
+below). Note that training will likely take considerably longer if
+early-stopping is enabled.
+
+The LifghtFM module does not provide access to the loss function, so
+earlier stopping will be based on an accuracy-based metric.
+
+```{python}
+#| code-fold: show
+#| code-summary: "For early-stopping based on normalized discounted cumulative gain"
+def mean_ndcg(cond, pred):
+    return mean_row_stat(cond, pred, ndcg)
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "For early-stopping based on hit-rate at k"
+def mean_hrk(cond, pred):
+    return mean_row_stat(cond, pred, hrk)
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "For early-stopping based on mean reciprocal rank"
+def mean_recip_rank(cond, pred):
+    return mean_row_stat(cond, pred, recip_rank)
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "Function definition enabling collection of metrics"
+def mean_row_stat(a, b, f):
+    """
+    Return mean of `f' applied in parallel to corresponding non-zero rows
+    of LIL-format matrices `a' and `b'.
+    """
+    with multiprocessing.Pool(n_avail_cpu()) as pool:
+        pairs = ((x, y) for x, y in zip(a.data, b.data) if len(x) and len(y))
+        return np.mean(pool.starmap(f, pairs))
+```
 
 ```{python}
 #| code-fold: show
@@ -796,29 +881,7 @@ def n_avail_cpu():
 
 ```{python}
 #| code-fold: show
-#| code-summary: "Define evaluation metrics"
-
-# for early-stopping based on normalized discounted cumulative gain
-def mean_ndcg(cond, pred):
-    return mean_row_stat(cond, pred, ndcg)
-
-# for early-stopping based on hit-rate at k
-def mean_hrk(cond, pred):
-    return mean_row_stat(cond, pred, hrk)
-
-# for early-stopping based on mean reciprocal rank
-def mean_recip_rank(cond, pred):
-    return mean_row_stat(cond, pred, recip_rank)
-
-def mean_row_stat(a, b, f):
-    """
-    Return mean of `f' applied in parallel to corresponding non-zero rows
-    of LIL-format matrices `a' and `b'.
-    """
-    with multiprocessing.Pool(n_avail_cpu()) as pool:
-        pairs = ((x, y) for x, y in zip(a.data, b.data) if len(x) and len(y))
-        return np.mean(pool.starmap(f, pairs))
-
+#| code-summary: "Define evaluation metric: Normalized Discounted Cummulative Gain"
 def ndcg(cond, pred, k=5):
     """
     Compute normalized discounted cumulative gain at k = `k' of list
@@ -827,7 +890,11 @@ def ndcg(cond, pred, k=5):
     a = np.array(cond).reshape(1, -1)
     b = np.array(pred).reshape(1, -1)
     return ndcg_score(a, b, k=k)
+```
 
+```{python}
+#| code-fold: show
+#| code-summary: "Define evaluation metric: Hit rate at k"
 def hrk(rel_true, rel_pred, k=5):
     """
     Return hit-rate at `k', that is, the proportion of relevant items
@@ -843,7 +910,11 @@ def hrk(rel_true, rel_pred, k=5):
     qs = (r <= k for r in rankdata([-rel_pred[j] for j in js], "ordinal"))
     den = sum(ps)
     return inf if not den else sum(p & q for p, q in zip(ps, qs)) / den
+```
 
+```{python}
+#| code-fold: show
+#| code-summary: "Define evaluation metric: Reciprocal rank"
 def recip_rank(rel, pred):
     """
     Return reciprocal rank of first relevant (`rel' > 0) element, where ranks
@@ -870,21 +941,30 @@ def recip_rank(rel, pred):
 hyper["stop_crit"] = mean_ndcg
 ```
 
+If early-stopping is disabled then we'll merely train a recommender with
+the specified values of hyper-parameters on the full training set.
+Otherwise, we'll train on the reduced training set and evaluate the
+model after each epoch of training on the validation set until reaching
+the stopping point defined by `hyper["iter"]` and by the early-stopping
+criterion.
+
 ```{python}
 #| code-fold: show
 #| code-summary: "Fit model"
 if hyper.get("stop_crit") is None:
+    # Train on full training set since we aren't tuning any hyper-parameters.
     model.fit(
-        interactions  = data["tr"]["ui"],
+        interactions  = data["tr_full"]["ui"],
         epochs        = hyper["iter"],
-        user_features = data["tr"]["uft"],
-        item_features = data["tr"]["ift"],
+        user_features = data["tr_full"]["uft"],
+        item_features = data["tr_full"]["ift"],
         num_threads   = n_avail_cpu()
     )
 else:
     stats = []
     whichmax = 0
     for i in range(hyper["iter"]):
+        # Train for one epoch on one of the partitions of the training set.
         model.fit_partial(
             interactions  = data["tr"]["ui"],
             epochs        = 1,
@@ -892,6 +972,7 @@ else:
             item_features = data["tr"]["ift"],
             num_threads   = n_avail_cpu()
         )
+        # Evaluate model on other partition.
         yhat = model.predict(
             user_ids      = data["va"]["ui"].row,
             item_ids      = data["va"]["ui"].col,
@@ -902,49 +983,87 @@ else:
         cond = sp.coo_matrix(data["va"]["ui"])
         pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
         stat = hyper["stop_crit"](cond.tolil(), pred.tolil())
-        print("validation-set statistic on iteration {:{}d}: {:f}".\
+        print("validation-set statistic on iteration {:{}d}: {:f}".
             format(i, 1 + floor(log10(hyper["iter"])), stat))
+        # Evaluate stopping criterion.
         stats.append(stat)
         if stat > stats[whichmax]:
             whichmax =  i
             continue
         if i - whichmax >= hyper["patience"]:
-            print(("stopping early...best iteration: {}; "
-                + "re-training accordingly...").format(whichmax))
-            model.fit(
-                interactions  = data["tr"]["ui"],
-                epochs        = 1 + whichmax,
-                user_features = data["tr"]["uft"],
-                item_features = data["tr"]["ift"],
-                num_threads   = n_avail_cpu()
-            )
+            print("stopping early...best iteration: {}".format(whichmax))
             break
+    # Re-train on full training set for number of epochs adjusted according to
+    # difference in size between full training set and partial training set.
+    model.fit(
+        interactions  = data["tr_full"]["ui"],
+        epochs        = int(1 + whichmax
+                            * data["tr_full"]["ui"].count_nonzero()
+                            / data["tr"]["ui"].count_nonzero()),
+        user_features = data["tr_full"]["uft"],
+        item_features = data["tr_full"]["ift"],
+        num_threads   = n_avail_cpu()
+    )
+    # Illustrate validation-set statistics.
+    fig, ax = plt.subplots()
+    ax.plot(stats, "bo")
+    ax.set_xlabel("epoch")
+    ax.set_ylabel(hyper["stop_crit"].__name__)
+    ax.set_title("validation-set statistics by training epoch")
+    plt.show()
 ```
 
-# Evaluate mapping
+# Evaluate model
 
-Let's evaluate our trained recommender on the testing set.
+Let's evaluate our trained recommender on the testing set. We'll compute
+the evaluation metrics in `stats` (see below) from the recommender's
+predictions for the testing set's user-item pairs.
 
 ```{python}
 #| code-fold: show
 #| code-summary: "Evaluate model on test data"
-test = data.get("te", data["va"])
-yhat = model.predict(
-    user_ids      = test["ui"].row,
-    item_ids      = test["ui"].col,
-    user_features = test["uft"],
-    item_features = test["ift"],
-    num_threads   = n_avail_cpu()
-)
-cond = sp.coo_matrix(test["ui"])
-pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
-stats = {
-    "mean HR@k":            mean_hrk,
-    "mean NDCG":            mean_ndcg,
-    "mean reciprocal rank": mean_recip_rank,
-}
-for s, f in stats.items():
-    print("{}: {:f}".format(s, f(cond.tolil(), pred.tolil())))
+#| 
+# Set `want_testing' to `True' to evaluate recommender on testing set.
+want_testing = False
+te = data.get("te")
+if want_testing and (data.get("te") is not None):
+    stats = {
+        "mean HR@k":            mean_hrk,
+        "mean NDCG":            mean_ndcg,
+        "mean reciprocal rank": mean_recip_rank,
+    }
+    yhat = model.predict(
+        user_ids      = te["ui"].row,
+        item_ids      = te["ui"].col,
+        user_features = te["uft"],
+        item_features = te["ift"],
+        num_threads   = n_avail_cpu()
+    )
+    # The implementations of the evaluation metrics in `stats' each take two
+    # LIL-format sparse user-item matrices as input: One assumed to provide
+    # labels (`cond') and, the other (`pred'), predictions.
+    cond = sp.coo_matrix(te["ui"])
+    pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
+    # for all users
+    _cond = cond.tolil()
+    _pred = pred.tolil()
+    print("for all users:")
+    for s, f in stats.items():
+        print("\t{}: {:f}".format(s, f(_cond, _pred)))
+    # for users present both in training set and in testing set
+    I = list(set(te["ui"].row) & set(data["tr_full"]["ui"].row))
+    _cond = cond.tolil()[I]
+    _pred = pred.tolil()[I]
+    print("for users present both in training set and in testing set:")
+    for s, f in stats.items():
+        print("\t{}: {:f}".format(s, f(_cond, _pred)))
+    # for testing-set users *not* present in training set
+    I = list(set(te["ui"].row) - set(data["tr_full"]["ui"].row))
+    _cond = cond.tolil()[I]
+    _pred = pred.tolil()[I]
+    print("for testing-set users not present in training set:")
+    for s, f in stats.items():
+        print("\t{}: {:f}".format(s, f(_cond, _pred)))
 ```
 
 # References
