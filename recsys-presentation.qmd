@@ -1,14 +1,13 @@
 ---
-#title: "Tutorial:<br>Recommender Systems"
-#author: "Amanda Peterson"
-#date: May 20, 2022
+title: "Tutorial:<br>Recommender Systems"
+author: "Amanda Peterson"
+date: May 20, 2022
 format: 
   revealjs:
     scrollable: false
     chalkboard: true
     #theme: dark
     footer: "SCADS 2022 RecSys Tutorial"
-    #logo: logo.png
     navigation-mode: linear
     transition: slide
     background-transition: fade
@@ -18,22 +17,6 @@ format:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-# 
-
-<center>
-
-::: {.r-fit-text}
-Tutorial: Recommender Systems
-:::
-
-Amanda Peterson
-
-May 20, 2022
-
-</center>
-
-![](images/thumb.png){.absolute top=200 right=125 height=250}
 
 ## Outline
 
@@ -153,11 +136,29 @@ Examples:
 
 ![](images/factorization_machine.png){fig-align="center" width=75%}
 
-# Deep Learning Models for Recommendation 
+## 
 
-## Matrix Factorization as a Deep Learning Model
+<br>
 
-TODO: See Nick Petreath presentation
+::: r-fit-text
+**Deep Learning Models<br>for Recommender Systems** 
+:::
+
+## Matrix Factorization in a Deep Learning Framework
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](images/matrix_factorization.png){fig-align="center"  height=350}
+:::
+::: {.column width="50%"}
+
+- Use sigmoid prediction function and binary cross-entropy (log loss) for binary feedback
+- Use linear regression prediction function and MSE loss for 5-star ratings
+
+:::
+::::
 
 ## Wide and Deep
 
@@ -170,6 +171,7 @@ TODO: See Nick Petreath presentation
 ::: {.column width="40%"}
 
 - Model from Google 
+- Memorization + Generalization
 - Example: 
 
 :::
@@ -194,6 +196,7 @@ TODO: See Nick Petreath presentation
 
 ::: {.column width="50%"}
 - Previous RecSys Model for [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.)
+- Collaborative filtering only (no side features)
 
 :::
 
@@ -265,6 +268,7 @@ TODO: See Nick Petreath presentation
 
 ::: {.column width="40%"}
 - Model from Google
+- Parallel and stacked versions
 - Cross Network: $x_{i+1} = x_0 (Wx_i + b) + x_i$
 
 :::
@@ -297,21 +301,23 @@ e.g., Gender x UserId, MovieId x UserId."
 :::
 
 
-## Explainability of Deep Learning RecSys Models
+## Additional Reading: Explainability of Deep Learning RecSys Models
 
 
 ## "Two-tower" Sysetms
 
-## Additional Reading: Explainability of Deep Learning RecSys Models
 
-- paper
-
-
-## Deep Learning for RecSys: Additional Reading
+## Additional Reading: Deep Learning for RecSys
 
 
 
-# News Recommendation
+## 
+
+<br><br>
+
+::: r-fit-text
+**News Recommendation**
+:::
 
 ## MIND
 
@@ -395,8 +401,13 @@ and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Val
 :::
 
 
-# Evaluation
+## 
 
+<br><br><br>
+
+::: r-fit-text
+**Evaluation of RecSys Models**
+:::
 
 ## Evaluation Metrics for Recommendation Systems
 
