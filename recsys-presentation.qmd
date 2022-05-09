@@ -436,7 +436,13 @@ and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Val
 :::
 
 
-# Final Thoughts
+## 
+
+<br><br><br>
+
+::: r-fit-text
+Final Thoughts
+:::
 
 ## Tricks of the Trade
 
