@@ -172,7 +172,7 @@ Examples:
 
 - Model from Google 
 - Memorization + Generalization
-- Example: 
+- Example: <font size="6px">App recommendation. Input: Item indices, user side & context info. Output: Binary (indicating app installation)</font>
 
 :::
 ::::
@@ -220,7 +220,8 @@ Examples:
 
 ::: {.column width="40%"}
 - Model from Huawei
-- Example: 
+- Inspired by Factorization Machines
+- Example: <font size="6px">[Criteo dataset](https://www.kaggle.com/competitions/criteo-display-ad-challenge/data) (13 integer features, 26 categorical features, binary labels.)</font>
 
 :::
 
@@ -238,7 +239,7 @@ Examples:
 :::: {.columns}
 
 ::: {.column width="60%"}
-![](https://gitlab.evoforge.org/arpete2/dlrs-catalog/-/raw/main/images/DLRM.png){height="350" fig-align="center"}
+![](images/DLRM.png){height="350" fig-align="center"}
 :::
 
 ::: {.column width="40%"}
@@ -258,7 +259,7 @@ Examples:
 
 
 
-## DCNV2
+## DCN-V2
 
 :::: {.columns}
 
@@ -270,6 +271,7 @@ Examples:
 - Model from Google
 - Parallel and stacked versions
 - Cross Network: $x_{i+1} = x_0 (Wx_i + b) + x_i$
+- Claims to beat DLRM and DeepFM on [Criteo](https://www.kaggle.com/competitions/criteo-display-ad-challenge/data) and [MovieLens](https://grouplens.org/datasets/movielens) datasets
 
 :::
 
@@ -306,6 +308,16 @@ e.g., Gender x UserId, MovieId x UserId."
 
 ## "Two-tower" Sysetms
 
+![](images/two-tower.png){fig-align='center' height=350}
+
+<center>Used for item retreival (as opposed to ranking).</center>
+
+::: aside
+
+Image source: https://www.linkedin.com/pulse/personalized-recommendations-iv-two-tower-models-gaurav-chakravorty. See also [Sampling-Bias-Corrected Neural Modeling for Large Corpus
+Item Recommendations](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/6c8a86c981a62b0126a11896b7f6ae0dae4c3566.pdf).
+
+:::
 
 ## Additional Reading: Deep Learning for RecSys
 
