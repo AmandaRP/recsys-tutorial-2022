@@ -65,12 +65,12 @@ Collaborative + Content Filtering
 
 **Implicit Feedback**: Actions taken by the user which can be used infer preferences about products (e.g. click data, dwell time, purchases)
 
-## User-item Rating Array {transition="slide-in none-out"}
+## User-item Rating Matrix {transition="slide-in none-out"}
 
 ![](images/user_item_matrix.png)
 
 
-## User-item Rating Array (Implicit) {transition="none"}
+## User-item Rating Matrix (Implicit) {transition="none"}
 
 ![](images/user_item_matrix_implicit.png)
 
@@ -83,8 +83,6 @@ Examples:
 - [MovieLens 25K](https://grouplens.org/datasets/movielens/): 99.75% sparse
 - [Micrsoft News Dataset](https://msnews.github.io/): 99.98% sparse
 - [Amazon](https://cseweb.ucsd.edu//~jmcauley/pdfs/www16a.pdf): > 99.99% sparse
-
-## Dimension Reduction of the User-item Array
 
 ## User-Item Array as a Bipartite Graph
 
@@ -117,8 +115,19 @@ Examples:
 
 ![](images/red_arrow.png){.absolute top=150 left=220 width="50" height="25"}
 
+:::: {.columns}
 
-![](images/netflix_fig2.png){fig-align="center" width=40%}
+::: {.column width="50%"}
+
+![](images/netflix_fig2.png){width=80%}
+:::
+
+::: {.column width="50%"}
+
+- Matrix factorization (aka latent factor model)
+
+:::
+::::
 
 ::: aside
 
@@ -135,6 +144,23 @@ Examples:
 ![](images/red_arrow.png){.absolute top=25 left=360 width="50" height="25"}
 
 ![](images/factorization_machine.png){fig-align="center" width=75%}
+
+## {transition="none" auto-animate=true}
+
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
+
+
+![](images/red_arrow.png){.absolute top=150 left=510 width="50" height="25"}
+
+
+## {transition="none" auto-animate=true}
+
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
+
+
+![](images/red_arrow.png){.absolute top=25 left=685 width="50" height="25"}
+
+
 
 ## 
 
@@ -303,8 +329,9 @@ e.g., Gender x UserId, MovieId x UserId."
 :::
 
 
-## Additional Reading: Explainability of Deep Learning RecSys Models
+## Additional Reading: Explainable Recommendations
 
+- [Measuring "Why" in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation](https://arxiv.org/pdf/2202.06466.pdf)
 
 ## "Two-tower" Sysetms
 
@@ -321,7 +348,17 @@ Item Recommendations](https://storage.googleapis.com/pub-tools-public-publicatio
 
 ## Additional Reading: Deep Learning for RecSys
 
+- Survey:
+    * [Deep Learning based Recommender System: A Survey and New Perspectives](https://arxiv.org/pdf/1707.07435.pdf)
+    
+- Knowledge graphs:
 
+    * [Deep Learning on Knowledge Graph for Recommender System: A Survey](https://arxiv.org/pdf/2004.00387.pdf)
+
+    * [A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development,
+and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Valdiviezo-Diaz. MDPI Information journal.
+
+- [Recommender Systems Paper Repository](https://github.com/hongleizhang/RSPapers)
 
 ## 
 
@@ -407,9 +444,7 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 - Networks for Knowledge Graphs
 
 ::: aside
-[A Comprehensive Survey of Knowledge Graph-Based
-Recommender Systems: Technologies, Development,
-and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Valdiviezo-Diaz. MDPI Information journal.
+
 :::
 
 
@@ -430,13 +465,20 @@ and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Val
 
 ### Accuracy 
 
-::: {.incremental}
+
+| Metric               | Range | Best |
+|:---------------------|-------|:------:|
+| Hit Rate at $k$ (HR@$k$) | [0,1] | <font size="6px">$MAP@k = \frac{1}{m} ∑_{i=1}^k P(i) * rel(i)$</font>  |
+| Mean Average Precision at $k$ (MAP@$k$) | [0,1] | 1    |
+| Normalized Discounted Cumulative Gain (NDCG@$k$) | [0,1] | 1    |
+| Mean Reciprocal Rank (MRR) | [0,1] | 1    |
+
+
   - Hit Rate at k (HR@k)
   - Mean Average Precision at k (MAP@k)
   - Normalized Discounted Cumulative Gain (NDCG@k)
   - Mean Reciprocal Rank (MRR)
-:::
-  
+
 ### Beyond accuracy
 
 ::: {.incremental}
@@ -447,6 +489,19 @@ and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Val
 
 :::
 
+## Hit Rate at $k$
+
+<br>
+Percent of users who had a "positive" item in their top-$k$ recommendation list. 
+<br><br>
+No penalization for location of positive(s) in list.
+
+Just limit to those that are in MIND paper?
+
+
+## Normalized Discounted Cumulative Gain at $k$
+
+Contrary to HR@$k$, we penalize for "positive" items that are lower in the list (considering the top $k$ only).
 
 ## 
 
