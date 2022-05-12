@@ -29,6 +29,10 @@ knitr::opts_chunk$set(echo = TRUE)
 - Evaluation metrics
 - Hands-on exercise
 
+## Why Recommender Systems?
+
+> TODO: Awesome quote from Lex. See format here. https://quarto.org/docs/authoring/markdown-basics.html
+
 ## Types of Recommender Systems
 
 ::: {.panel-tabset}
@@ -310,7 +314,7 @@ Examples:
 :::
 
 
-## Explainability of DCN-V2 
+## DCN-V2: Under the Hood 
 
 We can consider the weight matrix W in the first cross
 layer.
@@ -333,7 +337,7 @@ e.g., Gender x UserId, MovieId x UserId."
 
 - [Measuring "Why" in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation](https://arxiv.org/pdf/2202.06466.pdf)
 
-## "Two-tower" Sysetms
+## Terminology: Two-tower Sysetms
 
 ![](images/two-tower.png){fig-align='center' height=350}
 
@@ -468,40 +472,175 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 
 | Metric               | Range | Best |
 |:---------------------|-------|:------:|
-| Hit Rate at $k$ (HR@$k$) | [0,1] | <font size="6px">$MAP@k = \frac{1}{m} ∑_{i=1}^k P(i) * rel(i)$</font>  |
+| Hit Rate at $k$ (HR@$k$) | [0,1] | 1  |
 | Mean Average Precision at $k$ (MAP@$k$) | [0,1] | 1    |
 | Normalized Discounted Cumulative Gain (NDCG@$k$) | [0,1] | 1    |
 | Mean Reciprocal Rank (MRR) | [0,1] | 1    |
 
 
-  - Hit Rate at k (HR@k)
-  - Mean Average Precision at k (MAP@k)
-  - Normalized Discounted Cumulative Gain (NDCG@k)
-  - Mean Reciprocal Rank (MRR)
-
 ### Beyond accuracy
 
-::: {.incremental}
-  - Diversity at k (Div@k)
-  - Novelty at k (Nov@k)
-  - Catalog coverage (CC)
+:::: {.columns}
+
+::: {.column width="60%"}
+
+
+| Metric               | Range |
+|:---------------------|:-----:|
+| Diversity at k (Div@k) | [0,1] |
+| Novelty at k (Nov@k) | [0,1] |
+| Catalog coverage (CC) | [0,1] |
+
+::: 
+::: {.column width="40%"}
+
+::: {.callout-tip}
+
+##
+
+Unlike accuracy metrics, which are computed using a test set, 
+beyond-accuracy metrics are computed on the final recommendation list.
 :::
+:::
+::::
 
 :::
 
-## Hit Rate at $k$
+## Hit Rate
 
 <br>
+
+::: {.callout-note icon=false}
+
+## Hit rate at $k$
+
 Percent of users who had a "positive" item in their top-$k$ recommendation list. 
-<br><br>
+
+:::
+
+<br>
 No penalization for location of positive(s) in list.
 
-Just limit to those that are in MIND paper?
 
+
+## Mean Average Precision
+
+Contrary to HR@$k$, we penalize for "positive" items that are lower in the list (considering the top $k$ only).
+
+::: {.callout-note icon=false}
+
+## Average precision at $k$
+
+$$
+AP@k = \frac{1}{m} ∑_{i=1}^k P(i) * rel(i)
+$$
+where $P(i)$ is the precision at $i$ of the $i^{th}$ item, $rel(i)$ is the relevance of the $i^{th}$ item (0 or 1), and $m=min(k, \text{number of relevant items in full item space})$.  
+
+:::
+
+Calculate the mean over all users to obtain MAP@$k$.
+
+::: aside
+See [this blog post](https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html) for a detailed overview.
+:::
+
+## NDCG
+
+Similar to MAP@$k$, NDCG@$k$ also penalizes "positive" items that are lower on the recommendation list.
+
+::: {.callout-note icon=false}
 
 ## Normalized Discounted Cumulative Gain at $k$
 
-Contrary to HR@$k$, we penalize for "positive" items that are lower in the list (considering the top $k$ only).
+$$
+NDCG@k = \frac{DCG_k}{IDCG_k}, \text{ where } DCG_k =  \sum_{i=1}^k \frac{rel(i)}{log_2(i+1)} \text{ and } IDCG_k = \sum_{i=1}^{|REL_k|} \frac{rel(i)}{log_2(i+1)}
+$$
+:::
+
+REL$_k$ is the list of $k$ relevant items. The "I" in IDCG stands for "ideal." The above is computed for each user and then averaged over all users.
+
+
+## Mean Reciprocal Rank
+
+The mean across users of the reciprocal rank of their first relevant item.
+
+::: {.callout-note icon=false}
+
+## Mean Reciprocal Rank
+
+Let $u$ be a user in the set of users $U$.  Let $r_u$ be the rank of the 
+first relevant item for user $u$. Then,  
+$$
+MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
+$$
+
+:::
+
+## Beyond Accuracy: Catalog Coverage
+
+<br>
+
+::: {.callout-note icon=false}
+
+## Catalog coverage at $k$
+
+The percentage of the full set of items that are recommended to at least one user (considering users' top-$k$ recommendation lists).
+
+:::
+
+## Beyond Accuracy: Diversity
+
+<br>
+
+::: {.callout-note icon=false}
+
+## Diversity at $k$
+
+Aggregate (mean) dissimilarity between pairs of user's recommendation lists. 
+<br><br>
+Dissimilarity ($1 - \text{similarity}$) can be computed using metrics such as 
+Jaccard similarity, Kendall's $\tau$, or Spearman's footrule.
+
+:::
+
+::: aside
+Ronald Fagin, Ravi Kumar and D. Sivakumar. (2003). Comparing top k lists. SIAM J. Discrete Mathematics 17, 1, 134–160.
+:::
+
+## Beyond Accuracy: Novelty
+
+<br>
+
+::: {.callout-note icon=false}
+
+## Novelty at $k$
+
+Item novelty is the proportion of all users to whom the item is *not* recommended (considering all users' top-$k$ recommendation lists). Nov@$k$ is the mean item 
+novelty over all users' top-$k$ items. 
+
+:::
+
+
+## 
+
+<br>
+
+::: {.callout-tip}
+
+Use as many metrics as possible (some are better than others for different tasks)
+
+:::
+
+
+::: {.callout-warning}
+
+Definitions and implementations of metrics can differ between software. 
+It's important to use the same implementation when comparing models.
+
+:::
+
+
+
 
 ## 
 
