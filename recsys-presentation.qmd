@@ -440,7 +440,9 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 
 ## The MIND Challenge
 
-## Further Reading
+## Suggested Reading
+
+Raza, S., Ding, C. [News recommender system: a review of recent progress, challenges, and opportunities](https://doi.org/10.1007/s10462-021-10043-x). Artif Intell Rev 55, 749–800 (2022). 
 
 ## Other Types of RecSys Models
 
