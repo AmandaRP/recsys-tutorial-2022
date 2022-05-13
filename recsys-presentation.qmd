@@ -88,7 +88,7 @@ Examples:
 - [Micrsoft News Dataset](https://msnews.github.io/): 99.98% sparse
 - [Amazon](https://cseweb.ucsd.edu//~jmcauley/pdfs/www16a.pdf): > 99.99% sparse
 
-## User-Item Array as a Bipartite Graph
+## User-Item Matrix as a Bipartite Graph
 
 ![Items represented as blue nodes (bottom). Users represented as pink nodes (top). User-item interactions represented by an edge. Edges colored according to a particular user feature.](images/bipartite.png)
 
@@ -123,7 +123,7 @@ Examples:
 
 ::: {.column width="50%"}
 
-![](images/netflix_fig2.png){width=80%}
+![](images/netflix_fig2.png){width=70%}
 :::
 
 ::: {.column width="50%"}
@@ -135,7 +135,7 @@ Examples:
 
 ::: aside
 
-[Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf) by Koren, Bell, and Volinsky
+[Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf). 2009. Koren, Bell, and Volinsky. IEEE COMPUTER.
 
 :::
 
@@ -147,7 +147,11 @@ Examples:
 
 ![](images/red_arrow.png){.absolute top=25 left=360 width="50" height="25"}
 
-![](images/factorization_machine.png){fig-align="center" width=75%}
+![](images/factorization_machine.png){fig-align="center" height=325}
+
+::: aside
+[Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf). 2010. Steffen Rendle.
+:::
 
 ## {transition="none" auto-animate=true}
 
@@ -184,8 +188,10 @@ Examples:
 :::
 ::: {.column width="50%"}
 
+::: {.incremental}
 - Use sigmoid prediction function and binary cross-entropy (log loss) for binary feedback
 - Use linear regression prediction function and MSE loss for 5-star ratings
+:::
 
 :::
 ::::
@@ -209,7 +215,7 @@ Examples:
 
 ::: aside
 
-[Wide & Deep Learning for Recommender Systems](https://arxiv.org/pdf/1606.07792.pdf). 2016. Heng-Tze Cheng et. al. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. 
+[Wide & Deep Learning for Recommender Systems](https://arxiv.org/pdf/1606.07792.pdf). 2016. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. Heng-Tze Cheng et. al.
 
 :::
 
@@ -333,20 +339,25 @@ e.g., Gender x UserId, MovieId x UserId."
 :::
 
 
-## Additional Reading: Explainable Recommendations
-
-- [Measuring "Why" in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation](https://arxiv.org/pdf/2202.06466.pdf)
 
 ## Terminology: Two-tower Sysetms
 
-![](images/two-tower.png){fig-align='center' height=350}
+:::: {.columns}
 
-<center>Used for item retreival (as opposed to ranking).</center>
+::: {.column width="60%"}
+![](images/two-tower.png){fig-align='center' height=400}
+
+:::
+::: {.column width="40%"}
+<br>Used for item retreival (as opposed to ranking).
+:::
+::::
 
 ::: aside
 
-Image source: https://www.linkedin.com/pulse/personalized-recommendations-iv-two-tower-models-gaurav-chakravorty. See also [Sampling-Bias-Corrected Neural Modeling for Large Corpus
-Item Recommendations](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/6c8a86c981a62b0126a11896b7f6ae0dae4c3566.pdf).
+Image source: [linkedin.com/pulse/personalized-recommendations-iv-two-tower-models-gaurav-chakravorty](https://www.linkedin.com/pulse/personalized-recommendations-iv-two-tower-models-gaurav-chakravorty). See also [Sampling-Bias-Corrected Neural Modeling for Large Corpus
+Item Recommendations](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/6c8a86c981a62b0126a11896b7f6ae0dae4c3566.pdf). In Thirteenth
+ACM Conference on Recommender Systems (RecSys 2019). Yi et al.
 
 :::
 
@@ -354,15 +365,6 @@ Item Recommendations](https://storage.googleapis.com/pub-tools-public-publicatio
 
 - Survey:
     * [Deep Learning based Recommender System: A Survey and New Perspectives](https://arxiv.org/pdf/1707.07435.pdf)
-    
-- Knowledge graphs:
-
-    * [Deep Learning on Knowledge Graph for Recommender System: A Survey](https://arxiv.org/pdf/2004.00387.pdf)
-
-    * [A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development,
-and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Valdiviezo-Diaz. MDPI Information journal.
-
-- [Recommender Systems Paper Repository](https://github.com/hongleizhang/RSPapers)
 
 ## 
 
@@ -438,11 +440,12 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 [Neural News Recommendation with Multi-Head Self-Attention](https://wuch15.github.io/paper/EMNLP2019-NRMS.pdf). 2019. Wue et. al.
 :::
 
-## The MIND Challenge
 
-## Suggested Reading
+## Suggested Reading: News Recommendation
 
-Raza, S., Ding, C. [News recommender system: a review of recent progress, challenges, and opportunities](https://doi.org/10.1007/s10462-021-10043-x). Artif Intell Rev 55, 749–800 (2022). 
+- [Technical Report](https://msnews.github.io/assets/doc/1.pdf) on Champion Solution for the [2020 MIND News Recommendation Challenge](https://msnews.github.io/competition.html)
+
+- Raza, S., Ding, C. [News recommender system: a review of recent progress, challenges, and opportunities](https://doi.org/10.1007/s10462-021-10043-x). Artif Intell Rev 55, 749–800 (2022). 
 
 ## Other Types of RecSys Models
 
@@ -674,6 +677,22 @@ Personalized recommendations in conjunction with other types of recommendations 
 - Make code/analysis/tuning/data reproducible. 
 - Use as many baseline algorithms as possible (including non-NN)
 - Use as many metrics as possible (some are better than others for different tasks)
+
+## Additional Reading
+
+- Explainable Recommendations
+    * [Measuring "Why" in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation](https://arxiv.org/pdf/2202.06466.pdf). 2022. Chen, Zhang, and Wen.
+    
+- Knowledge graphs:
+
+    * [Deep Learning on Knowledge Graph for Recommender System: A Survey](https://arxiv.org/pdf/2004.00387.pdf)
+
+    * [A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development,
+and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Valdiviezo-Diaz. MDPI Information journal.
+
+- [Recommender Systems Paper Repository](https://github.com/hongleizhang/RSPapers)
+
+
 
 
 ## Code 
