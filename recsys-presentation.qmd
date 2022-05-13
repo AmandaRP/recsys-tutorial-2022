@@ -12,6 +12,7 @@ format:
     transition: slide
     background-transition: fade
     #logo: "images/thumb.png"
+#header-includes: \usepackage{amsmath}
 ---
 
 ```{r setup, include=FALSE}
@@ -31,7 +32,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Why Recommender Systems?
 
-> TODO: Awesome quote from Lex. See format here. https://quarto.org/docs/authoring/markdown-basics.html
+> "The most exciting, the most powerful artificial intelligence systems space
+for the next couple of decades is recommender systems. They're going to have 
+the biggest impact on our society because they affect how the information is
+received, how we learn, what we think, how we communicate. These algorithms
+are controlling us and we have to really think deeply as engineers about how
+to speak up and think about their social implications." 
+
+-[Lex Fridman](https://lexfridman.com/), MIT Deep
+Learning and Artificial Intelligence Lectures: 
+[Deep Learning State of the Art 2020](https://www.youtube.com/watch?v=0VH1Lim8gL8&list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf)
 
 ## Types of Recommender Systems
 
@@ -121,14 +131,72 @@ Examples:
 
 :::: {.columns}
 
-::: {.column width="50%"}
+::: {.column width="35%"}
 
-![](images/netflix_fig2.png){width=70%}
+![](images/netflix_fig2.png){height=275}
 :::
 
-::: {.column width="50%"}
+::: {.column width="65%"}
 
-- Matrix factorization (aka latent factor model)
+::: {.incremental}
+
+<font size="5px">
+
+- "Matrix Factorization", a.k.a. latent factor model
+
+- **Goal**: Find user latent vector, $p_i \in R^f$, and item latent factor vector,
+$q_i \in R^f$, for each user and item. User's rating of the $j^{th}$ item: 
+$\hat{r}_{ij} = q_i^T p_i$
+
+- **Possible Solution**: Compute the SVD of the user-item "matrix".
+
+- **Issue**: How to impute missing values?
+
+</font>
+
+:::
+:::
+::::
+
+::: aside
+
+[Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf). 2009. Koren, Bell, and Volinsky. IEEE COMPUTER.
+
+:::
+
+
+
+
+## {transition="none" auto-animate=true}
+
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
+
+
+![](images/red_arrow.png){.absolute top=150 left=220 width="50" height="25"}
+
+:::: {.columns}
+
+::: {.column width="35%"}
+
+![](images/netflix_fig2.png){height=275}
+:::
+
+::: {.column width="65%"}
+
+<font size="5px">
+
+- **Goal**: Find user latent vector, $p_i \in \mathbb{R}^f$, and item latent factor vector,
+$q_i \in \mathbb{R}^f$, for each user and item. User's rating of the $j^{th}$ item: 
+$\hat{r}_{ij} = q_i^T p_i$
+
+
+- **Better Solution**: Model ratings and solve via stochastic gradient decent.
+
+$$
+min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|| q_j ||^2 + || p_i ||^2)
+$$
+
+</font>
 
 :::
 ::::
@@ -140,6 +208,61 @@ Examples:
 :::
 
 
+
+
+
+## {transition="none" auto-animate=true}
+
+![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
+
+
+![](images/red_arrow.png){.absolute top=150 left=220 width="50" height="25"}
+
+:::: {.columns}
+
+::: {.column width="35%"}
+
+![](images/netflix_fig2.png){height=275}
+:::
+
+::: {.column width="65%"}
+
+<font size="4px">
+
+
+$$
+min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|| q_j ||^2 + || p_i ||^2)
+$$
+
+</font>
+<font size="5px">
+
+**Enhancements**:
+
+- Incorporate global and main (user, item) effects
+- Incorporate weights
+- Model as a function of time
+- Ensemble many models
+
+</font>
+
+:::
+::::
+
+::: aside
+
+[Matrix Facorization Techniques for Recommender Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&rep=rep1&type=pdf). 2009. Koren, Bell, and Volinsky. IEEE COMPUTER.
+
+:::
+
+
+
+
+
+
+
+
+
 ## {transition="none" auto-animate=true}
 
 
@@ -147,10 +270,31 @@ Examples:
 
 ![](images/red_arrow.png){.absolute top=25 left=360 width="50" height="25"}
 
-![](images/factorization_machine.png){fig-align="center" height=325}
+:::: {.columns}
+
+::: {.column width="60%"}
+
+
+![](images/factorization_machine.png){fig-align="center" height=300}
+
+:::
+::: {.column width="40%"}
+
+<font size="6px">
+A hybrid model inspired by support vector machines (SVM) and factorization models.
+</font>
+
+<font size="5px">
+$$
+\hat{r}_{ij} = w_o + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n x_i x_j {\bf v}_i \cdot {\bf v}_j 
+$$
+
+</font>
+:::
+::::
 
 ::: aside
-[Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf). 2010. Steffen Rendle.
+[Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf). 2010. IEEE International Conference on Data Mining. Steffen Rendle.
 :::
 
 ## {transition="none" auto-animate=true}
@@ -161,12 +305,44 @@ Examples:
 ![](images/red_arrow.png){.absolute top=150 left=510 width="50" height="25"}
 
 
+
+**Example**: Pandora uses content associated with music that the listener has liked to recommend new music.
+
+::: {.incremental}
+
+- **Old**: "Musicologists" manually entered features about songs (mood, tempo, artist, etc.)
+- **New**: Deep content models learn features from music audio
+
+:::
+
+
+
 ## {transition="none" auto-animate=true}
 
 ![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
 
 
 ![](images/red_arrow.png){.absolute top=25 left=685 width="50" height="25"}
+
+<font size="6px">
+
+- **2016-2017**: Deep Learning for Recommender Systems (DLRS) Workshop at RecSys Conferences
+
+</font>
+
+::: {.incremental}
+
+<font size="6px">
+
+- **By 2018** the DLRS workshop was discontinued in favor of presenting deep 
+learning work in the main part of the conference.
+
+- **Today**: State-of-the art deep learning for all types of recommender systems.
+
+</font>
+
+:::
+
 
 
 
@@ -363,8 +539,8 @@ ACM Conference on Recommender Systems (RecSys 2019). Yi et al.
 
 ## Additional Reading: Deep Learning for RecSys
 
-- Survey:
-    * [Deep Learning based Recommender System: A Survey and New Perspectives](https://arxiv.org/pdf/1707.07435.pdf)
+<br><br>
+[Deep Learning based Recommender System: A Survey and New Perspectives](https://arxiv.org/pdf/1707.07435.pdf). 2018. ACM Comput. Surv. 1, 1, Article 1. Zhang et al.
 
 ## 
 
@@ -382,7 +558,7 @@ We're working with the **Mi**crosoft **N**ews **D**ataset this summer!
 
 ::: aside
 
-The paper is available at [https://aclanthology.org/2020.acl-main.331.pdf](https://aclanthology.org/2020.acl-main.331.pdf).
+[MIND: A Large-scale Dataset for News Recommendation](https://msnews.github.io/assets/doc/ACL2020_MIND.pdf). ACL 2020. Wu et al.
 
 :::
 
@@ -406,7 +582,7 @@ first and last appearance time of articles in the MIND dataset.
 ::::
 
 ::: aside
-Image sourced from the [MIND paper](https://aclanthology.org/2020.acl-main.331.pdf).
+Image sourced from the [MIND paper](https://msnews.github.io/assets/doc/ACL2020_MIND.pdf).
 :::
 
 
@@ -445,12 +621,8 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 
 - [Technical Report](https://msnews.github.io/assets/doc/1.pdf) on Champion Solution for the [2020 MIND News Recommendation Challenge](https://msnews.github.io/competition.html)
 
-- Raza, S., Ding, C. [News recommender system: a review of recent progress, challenges, and opportunities](https://doi.org/10.1007/s10462-021-10043-x). Artif Intell Rev 55, 749–800 (2022). 
+- [News recommender system: a review of recent progress, challenges, and opportunities](https://doi.org/10.1007/s10462-021-10043-x). 2022. Artificial Intelligence Review. Raza, S., Ding, C. 
 
-## Other Types of RecSys Models
-
-- Recurrent Neural Networks
-- Networks for Knowledge Graphs
 
 ::: aside
 
@@ -474,13 +646,10 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 
 ### Accuracy 
 
-
-| Metric               | Range | Best |
-|:---------------------|-------|:------:|
-| Hit Rate at $k$ (HR@$k$) | [0,1] | 1  |
-| Mean Average Precision at $k$ (MAP@$k$) | [0,1] | 1    |
-| Normalized Discounted Cumulative Gain (NDCG@$k$) | [0,1] | 1    |
-| Mean Reciprocal Rank (MRR) | [0,1] | 1    |
+- Hit Rate at $k$ (HR@$k$) 
+- Mean Average Precision at $k$ (MAP@$k$)
+- Normalized Discounted Cumulative Gain (NDCG@$k$) 
+- Mean Reciprocal Rank (MRR) 
 
 
 ### Beyond accuracy
@@ -490,11 +659,9 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 ::: {.column width="60%"}
 
 
-| Metric               | Range |
-|:---------------------|:-----:|
-| Diversity at k (Div@k) | [0,1] |
-| Novelty at k (Nov@k) | [0,1] |
-| Catalog coverage (CC) | [0,1] |
+- Diversity at k (Div@k)
+- Novelty at k (Nov@k) 
+- Catalog coverage (CC) 
 
 ::: 
 ::: {.column width="40%"}
@@ -609,7 +776,7 @@ Jaccard similarity, Kendall's $\tau$, or Spearman's footrule.
 :::
 
 ::: aside
-Ronald Fagin, Ravi Kumar and D. Sivakumar. (2003). Comparing top k lists. SIAM J. Discrete Mathematics 17, 1, 134–160.
+Ronald Fagin, Ravi Kumar and D. Sivakumar. 2003. Comparing top k lists. SIAM J. Discrete Mathematics 17, 1, 134–160.
 :::
 
 ## Beyond Accuracy: Novelty
@@ -655,10 +822,10 @@ It's important to use the same implementation when comparing models.
 Final Thoughts
 :::
 
-## Tricks of the Trade
+## Tips
 
-- **Sampling negative examples**: Weight items by popularity. This will better penalize popular items that can be recommended 
 - **Ranking vs retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates..
+- **Sampling negative examples**: Weight items by popularity. This will better penalize popular items that can be recommended 
 
 ## More Tips
 
@@ -672,34 +839,43 @@ Personalized recommendations in conjunction with other types of recommendations 
 
 ## Advice
 
-*Are we really making much progress? A worrying analysis of recent neural recommendation approaches.*
+*[Are we really making much progress? A worrying analysis of recent neural recommendation approaches.](https://dl.acm.org/doi/pdf/10.1145/3298689.3347058)*
 
 - Make code/analysis/tuning/data reproducible. 
 - Use as many baseline algorithms as possible (including non-NN)
 - Use as many metrics as possible (some are better than others for different tasks)
 
+::: aside
+Paper published in the Thirteenth ACM Conference on Recommender Systems (2019) by Maurizio et al.
+:::
+
 ## Additional Reading
 
-- Explainable Recommendations
-    * [Measuring "Why" in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation](https://arxiv.org/pdf/2202.06466.pdf). 2022. Chen, Zhang, and Wen.
+<font size="6px">
+
+**[Recommender Systems Paper Repository](https://github.com/hongleizhang/RSPapers)**
+
+**Explainable Recommendations**
+
+* [Measuring "Why" in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation](https://arxiv.org/pdf/2202.06466.pdf). 2022. Chen, Zhang, and Wen.
     
-- Knowledge graphs:
+**Knowledge graphs**
 
-    * [Deep Learning on Knowledge Graph for Recommender System: A Survey](https://arxiv.org/pdf/2004.00387.pdf)
+* [Deep Learning on Knowledge Graph for Recommender System: A Survey](https://arxiv.org/pdf/2004.00387.pdf). 2020. Association for Computing Machinery. Gao et al.
 
-    * [A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development,
-and Contributions](https://doi.org/10.3390/info12060232). 2021. Chicaiza and Valdiviezo-Diaz. MDPI Information journal.
+* [A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development,
+and Contributions](https://doi.org/10.3390/info12060232). 2021. MDPI Information Journal. Chicaiza and Valdiviezo-Diaz.
 
-- [Recommender Systems Paper Repository](https://github.com/hongleizhang/RSPapers)
-
-
+</font>
 
 
 ## Code 
 
-- Microsoft GitHub Repo: https://github.com/microsoft/recommenders
-- Tensorflow: https://www.tensorflow.org/recommenders
-- R Keras: https://github.com/AmandaRP
+<br>
+
+- Microsoft GitHub Repo: [https://github.com/microsoft/recommenders](https://github.com/microsoft/recommenders)
+- Tensorflow: [https://www.tensorflow.org/recommenders](https://www.tensorflow.org/recommenders)
+- R Keras: [https://github.com/AmandaRP](https://github.com/AmandaRP)
 
 ## 
 
