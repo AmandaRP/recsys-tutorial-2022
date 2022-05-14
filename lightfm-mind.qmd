@@ -3,7 +3,7 @@ title: "Application of LightFM to Microsoft News Dataset"
 date: now
 date-format: "hh:mm:ss ZZ, dddd, MMMM D, YYYY"
 execute:
-  eval: false
+  eval: true
 format:
   html:
     self-contained: true
@@ -80,7 +80,8 @@ editor_options:
 Here we develop a recommender for the Microsoft News Dataset
 [@microsoft-2020] by means of the
 [LightFM](https://making.lyst.com/lightfm/docs/home.html) [@kula-2015]
-python package.
+python package. We'll utilize collaborative filtering in conjunction with user 
+and item (news article) information.
 
 # Configure environment
 
@@ -109,8 +110,7 @@ import tempfile
 import zipfile
 ```
 
-
-Let's define the random seed now for the sake of reproducibility.
+Let's define a random seed for the sake of reproducibility.
 
 ```{python}
 #| code-fold: show
@@ -121,7 +121,7 @@ set_seed(seed)
 
 # Fetch data
 
-MIND is available for download. It comprises a small variant and a large
+MIND is available to [download](https://msnews.github.io/) from Microsoft. It comprises a small variant and a large
 variant. The former is a small random sub-sample of the latter. Both
 variants each comprise a training set and a validation set and the large
 variant comprises in addition an unlabeled testing set. Since this
@@ -182,7 +182,6 @@ fetch_mind([
 ])
 ```
 
-
 # Prepare data
 
 Now that we have a local copy of MIND (or of a subset of it), let's
@@ -199,7 +198,7 @@ Each official partition of MIND comprises:
 -   embeddings of named entities ("entity_embedding.vec")
 
 -   embeddings of relations of named entities
-    ("relation_embedding.vec").
+    ("relation_embedding.vec")
 
 Detailed information about these data is available
 [elsewhere](https://github.com/msnews/msnews.github.io/blob/811c3da00f028ad7737d8c8e131770e04ffe6346/assets/doc/introduction.md),
@@ -331,9 +330,10 @@ training set for validation.
 ```{python}
 #| code-summary: "Fetch data"
 data = {}
-dirs = {"tr": dir_training}
-if dir_testing is not None:
-    dirs["te"] = dir_testing
+dirs = {
+    "tr": dir_training,
+    "te": dir_testing,
+}
 for k, d in dirs.items():
     data[k] = {}
     data[k]["beha"] = get_behaviors(path_join(d, behaviors))
@@ -351,7 +351,7 @@ for k, v in data["tr"].items():
 
 ## Partition training set
 
-As mentioned previously, we'll partition the training set into two to
+As mentioned previously, we'll partition the training set in two to
 reserve some data for validation. Our partitioning scheme will reserve
 for validation the training-set data from the most recent day on which
 training data were collected; the remainder will be retained for
@@ -386,10 +386,19 @@ for k in ["tr", "va"]:
 
 ## Assemble interactions matrices
 
-For each subset of the data-set we'll require a sparse matrix in
-coordinate-list format of user-item interactions whose rows correspond
-to users, whose columns correspond to items and whose entries specify
-the users' implicit feedback about the items.
+For each subset of the data-set (training, validation, testing) we'll
+require a sparse matrix in coordinate-list format of user-item
+interactions whose rows correspond to users, whose columns correspond to
+items and whose entries specify the users' implicit feedback about the
+items; something like the following for each partition of the data-set,
+where ones indicate (implicit) positive feedback and zeros (implicit)
+negative feedback,
+
+            item_1 item_2 ... item_n
+    user_1 [     1      0 ...      1]
+    user_2 |     0      0 ...      1|
+     ...   |   ...    ... ...    ...|.
+    user_m [     1      1 ...      0]
 
 ```{python}
 #| code-summary: "Create sparse matrices"
@@ -446,7 +455,7 @@ for k, v in data.items():
 ```
 
 We needn't store explicit zeros in the training-set interactions matrix:
-Implicit zeros will suffice for training, because lightfm does its own
+Implicit zeros will suffice for training, because LightFM does its own
 sampling of implicit negatives.
 
 ```{python}
@@ -459,25 +468,48 @@ However, we do wish to retain any explicit zeros found in the validation
 and testing sets to retain the identity of the specific user-item pairs
 for which to make predictions during validation and during testing.
 
-
 ## Assemble features matrices
 
 In addition to interactions data, LightFM can incorporate data about the
 interactions into the recommendation system; we'll call these additional
 data "features". In particular, we can incorporate user-features and
-item-features by passing lightfm separate sparse matrices whose rows
+item-features by passing LightFM separate sparse matrices whose rows
 correspond to users and to items respectively, whose columns correspond
-to features and whose entries specify the users' and the items' weights
-on these features.
+to features and whose entries specify the users' and the items' values
+for these features.
 
 ### User-features
 
-We'll start with user-features. Each partition of the data-set will have
-a user-features matrix, which we'll assemble by blocks for ease of
-organization. All blocks of a given partition will share the mapping of
-users to rows established for the interactions matrices, but each will
-have its own mapping of features to columns that will be shared with the
-corresponding blocks of the other partitions.
+We'll start with user-features. Each partition of the data-set
+(training, validation, testing) will have a user-features matrix, which
+we'll organize in blocks (sub-matrices) for convenience. All blocks of a
+given partition will share the mapping of users to rows established for
+the interactions matrices, but each will have its own mapping of
+features to columns that will be shared with the corresponding blocks of
+the other partitions. After we've assembled the blocks, we'll stack them
+side-by-side to form the final user-features matrix.
+
+Here's a diagram. Suppose that our user-features matrix, `U`, comprises
+`p` features, `F1, F2, ..., Fp`. Then we might have
+
+    U = [F1 F2 ... Fp].
+
+Note that the feature blocks `F1, F2, ..., Fp` share the same number of
+rows: one per user. However, they may have different numbers of columns
+according to the underlying data that they represent; for example, a
+continuous feature `Fj` may be represented as a single column,
+
+         [x] user_1
+    Fj = |y|  ...   ,
+         [z] user_m
+
+whereas a categorical feature `Fk` of `g` levels will be one-hot encoded
+in as many columns,
+
+          level_1 level_2 ... level_g
+         [      1       0 ...       0] user_1
+    Fk = |      1       0 ...       0|  ...   .
+         [      0       1 ...       0] user_m
 
 ```{python}
 #| code-summary: "Create dictionaries"
@@ -486,13 +518,13 @@ uft_map = {k: {} for k in data.keys()}
 ```
 
 Specifically, in the user-features matrix we'll facilitate inclusion of
-the features named in `which_user_ft`. Specify
-`user' alone here, along with`item' alone later on in `which_item_ft`,
-to use LightFM for traditional collaborative filtering.
+the features named in `which_user_ft`. To use LightFM for traditional 
+collaborative filtering (with no side information), specify
+`user` alone here, along with `item` alone later on in `which_item_ft`.
 
 ```{python}
 #| code-summary: "Choose user features"
-#| 
+#| code-fold: show
 # Comment out any of the entries of `which_user_ft' to exclude these from the
 # features matrix.
 which_user_ft = [
@@ -502,10 +534,16 @@ which_user_ft = [
 ```
 
 The identity-features block is merely the identity matrix that has a one
-for each user present in the data-set.
+for each user present in the data-set,
+
+            user_1 user_2 ... user_m
+    user_1 [     1     0  ...      0]
+    user_2 |     0     1  ...      0|
+     ...   |   ...   ...  ...    ...|.
+    user_m [     0     0    0      1]
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Assemble identity block of user-features matrices"
 blk_name = "user"
 if blk_name in which_user_ft:
     blk = sp.eye(len(user_map), format="coo")
@@ -542,13 +580,19 @@ def get_ft_blk(data, get_ijv, row_map):
 ```
 
 The rows of the history block will correspond to users and the columns
-to the items present in the users' histories. For each user, the items
-present in the user's history log will receive a weight of one divided
-by the total number of items in the user's log so that each non-zero row
-of the block sums to one.
+to the items present in the users' histories. For each user `u`, the
+items present in the user's history log will receive a weight of one
+divided by the total number of items in the user's log---let there be
+`k_u` of them---so that each non-zero row of the block sums to one,
+
+            item_1         item_2 ...     item_n
+    user_1 [1/k_user_1          0 ... 1/k_user_1]
+    user_2 |         0          0 ... 1/k_user_2|
+     ...   |   ...            ... ...        ...|.
+    user_m [1/k_user_m 1/k_user_m ...          0]
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Assemble history block of user-features matrices"
 blk_name = "history"
 if blk_name in which_user_ft:
     def get_ijv(data):
@@ -595,16 +639,17 @@ for k in data.keys():
             copy=False)
 ```
 
-
 ### Item-features
 
-Next come the item-features. Each partition of the data-set will have an
-item-features matrix, which we'll assemble by blocks like we've done
-with the user-features. All blocks of a given partition will share the
-mapping of items to rows established between items and columns for the
-interactions matrices, but each will have its own mapping of features to
-columns that will be shared with the corresponding blocks of the other
-partitions.
+Next come the item-features. Each partition of the data-set (training,
+validation, testing) will have an item-features matrix, which we'll
+organize in blocks like we've done with the user-features matrices. All
+blocks of a given partition will share the mapping of items to rows
+established between items and columns for the interactions matrices, but
+each will have its own mapping of features to columns that will be
+shared with the corresponding blocks of the other partitions. After
+we've assembled the blocks, we'll stack them side-by-side to form the
+final item-features matrix.
 
 ```{python}
 #| code-summary: "Create dictionaries"
@@ -613,14 +658,13 @@ ift_map = {k: {} for k in data.keys()}
 ```
 
 Specifically, in the item-features matrix we'll facilitate inclusion of
-the features named in `which_item_ft`.  Note that this isn't an exhaustive
-list of the item-features that one might possibly include; consider, for
-example, that we could (but won't) incorporate the text of items' titles
-and abstracts with some more complex pre-processing.
+the features named in `which_item_ft`. Note that this isn't an
+exhaustive list of the item-features that one might possibly include;
+consider, for example, that we could (but won't) incorporate the text of
+items' titles and abstracts with some more complex pre-processing.
 
 ```{python}
 #| code-summary: "Choose item features"
-
 # Comment out any of the entries of `which_item_ft' to exclude these from the
 # features matrix.
 which_item_ft = [
@@ -635,10 +679,16 @@ which_item_ft = [
 ```
 
 The identity-features block is merely the identity matrix that has a one
-for each item present in the data-set.
+for each item present in the data-set,
+
+            item_1 item_2 ... item_n
+    item_1 [     1     0  ...      0]
+    item_2 |     0     1  ...      0|
+     ...   |   ...   ...  ...    ...|.
+    item_n [     0     0    0      1]
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Assemble identity block of item-features matrices"
 blk_name = "item"
 if blk_name in which_item_ft:
     blk = sp.eye(len(item_map), format="coo")
@@ -654,7 +704,7 @@ may comprise items that aren't present in any of the behaviors tables,
 which we may as well ignore.
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Delete data on irrelevant items"
 for k, v in data.items():
     data[k]["news"] = v["news"].loc[
         v["news"]["item"].isin(item_map.keys())
@@ -666,10 +716,18 @@ for k, v in data.items():
 The category and sub-category blocks will align items in rows (as
 previously stated) and their categories and sub-categories in columns.
 There's exactly one category and one sub-category associated with each
-item, each of which will be given a weight of one.
+item, each of which will be given a weight of one. Here follows a
+diagram of one possible such block, where we assume that there are `g`
+categories.
+
+            category_1 category_2 ... category_g
+    item_1 [         1          0 ...          0]
+    item_2 [         0          1 ...          0]
+      ...  |       ...        ... ...        ...|
+    item_n [         1          0 ...          0]
 
 ```{python}
-#| code-summary: "TODO"
+#| code-summary: "Assemble category, sub-category blocks of item-features matrices"
 for blk_name in ["cat", "subcat"]:
     if blk_name not in which_item_ft:
         continue
@@ -696,7 +754,13 @@ Next, we'll assemble blocks for the named entities of items' titles and
 abstracts, in particular, for the associated labels (such as "PGA Tour"
 for the corresponding named entity). Note that there may be zero or more
 named entities per title/abstract per item, which we'll weight equally
-so that the weights of each item's named entities sum to one.
+so that the weights of each item's named entities sum to one,
+
+            entity_1     entity_2 ...   entity_g
+    item_1 [1/k_item_1          0 ... 1/k_item_1]
+    item_2 |         0          0 ...          0|
+     ...   |   ...            ... ...        ...|.
+    item_n [1/k_item_n 1/k_item_n ...          0]
 
 ```{python}
 #| code-summary: "Assemble blocks for named entities from item titles and abstracts"
@@ -733,7 +797,16 @@ one embedding, although some items' named entities may lack embeddings
 and some items may be associated with more than one named entity. In the
 first case, the blocks' corresponding rows will be zero; in the second
 case, the embeddings will first be summed; and, in any case, the blocks'
-non-zero rows will be scaled to each have unit length.
+non-zero rows will be scaled to each have unit length,
+
+            embedding_1 embedding_2 ...   embedding_100
+    item_1 [          x           a ...               q]
+    item_2 |          y           b ...               r|
+     ...   |        ...         ... ...             ...|.
+    item_n [          z           c ...               s]
+
+(In this diagram, the letters inside the matrix denote arbitrary real
+numbers.)
 
 ```{python}
 #| code-summary: "Assemble blocks for the one-hundred dimensional embeddings of named entities"
@@ -795,21 +868,21 @@ for k in data.keys():
             copy=False)
 ```
 
-
-# Train Recommender Model
+# Train model
 
 We're ready to train a recommender by means of LightFM. There are many
 hyper-parameters to specify, such as the dimension of the latent feature
 space, the optimization criterion and the number of iterations of
 training. For simplicity, we'll leave many unspecified, which will
-therefore assume lightfm's default values.
+therefore assume LightFM's default values. More information is available 
+[here](https://making.lyst.com/lightfm/docs/lightfm.html).
 
 ```{python}
 #| code-fold: show
 #| code-summary: "Set hyper-parmaters"
 hyper = {
-    "dim":      16,
-    "loss":     "warp-kos",
+    "dim":      50,
+    "loss":     "bpr", # Bayesian personalized ranking
     "iter":     100,
     "rate":     0.05,
     "patience": 10,
@@ -938,7 +1011,7 @@ def recip_rank(rel, pred):
 ```{python}
 #| code-fold: show
 #| code-summary: "Run to enable early-stopping"
-hyper["stop_crit"] = mean_ndcg
+#hyper["stop_crit"] = mean_ndcg
 ```
 
 If early-stopping is disabled then we'll merely train a recommender with
@@ -1016,54 +1089,119 @@ else:
 # Evaluate model
 
 Let's evaluate our trained recommender on the testing set. We'll compute
-the evaluation metrics in `stats` (see below) from the recommender's
+the evaluation metrics in `metrics` (see below) from the recommender's
 predictions for the testing set's user-item pairs.
 
 ```{python}
 #| code-fold: show
-#| code-summary: "Evaluate model on test data"
-#| 
-# Set `want_testing' to `True' to evaluate recommender on testing set.
-want_testing = False
-te = data.get("te")
-if want_testing and (data.get("te") is not None):
-    stats = {
-        "mean HR@k":            mean_hrk,
-        "mean NDCG":            mean_ndcg,
-        "mean reciprocal rank": mean_recip_rank,
-    }
-    yhat = model.predict(
-        user_ids      = te["ui"].row,
-        item_ids      = te["ui"].col,
-        user_features = te["uft"],
-        item_features = te["ift"],
-        num_threads   = n_avail_cpu()
-    )
-    # The implementations of the evaluation metrics in `stats' each take two
-    # LIL-format sparse user-item matrices as input: One assumed to provide
-    # labels (`cond') and, the other (`pred'), predictions.
-    cond = sp.coo_matrix(te["ui"])
-    pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
-    # for all users
-    _cond = cond.tolil()
-    _pred = pred.tolil()
-    print("for all users:")
-    for s, f in stats.items():
-        print("\t{}: {:f}".format(s, f(_cond, _pred)))
-    # for users present both in training set and in testing set
-    I = list(set(te["ui"].row) & set(data["tr_full"]["ui"].row))
-    _cond = cond.tolil()[I]
-    _pred = pred.tolil()[I]
-    print("for users present both in training set and in testing set:")
-    for s, f in stats.items():
-        print("\t{}: {:f}".format(s, f(_cond, _pred)))
-    # for testing-set users *not* present in training set
-    I = list(set(te["ui"].row) - set(data["tr_full"]["ui"].row))
-    _cond = cond.tolil()[I]
-    _pred = pred.tolil()[I]
-    print("for testing-set users not present in training set:")
-    for s, f in stats.items():
-        print("\t{}: {:f}".format(s, f(_cond, _pred)))
+#| code-summary: "Specify evaluation metrics"
+metrics = {
+    "mean HR@k":            mean_hrk,
+    "mean NDCG":            mean_ndcg,
+    "mean reciprocal rank": mean_recip_rank,
+}
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "Score testing set"
+yhat = model.predict(
+    user_ids      = data["te"]["ui"].row,
+    item_ids      = data["te"]["ui"].col,
+    user_features = data["te"]["uft"],
+    item_features = data["te"]["ift"],
+    num_threads   = n_avail_cpu()
+)
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "Evaluate model for all users"
+# The implementations of the evaluation metrics in `metrics' each take two
+# LIL-format sparse user-item matrices as input: One assumed to provide
+# labels (`cond') and, the other (`pred'), predictions.
+cond = sp.coo_matrix(data["te"]["ui"])
+pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
+# for all users
+_cond = cond.tolil()
+_pred = pred.tolil()
+print("for all users:")
+for s, f in metrics.items():
+    print("\t{}: {:f}".format(s, f(_cond, _pred)))
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "Evaluate model for users present both in training and testing sets"
+# for users present both in training set and in testing set
+I = list(set(data["te"]["ui"].row) & set(data["tr_full"]["ui"].row))
+_cond = cond.tolil()[I]
+_pred = pred.tolil()[I]
+print("for users present both in training set and in testing set:")
+for s, f in metrics.items():
+    print("\t{}: {:f}".format(s, f(_cond, _pred)))
+```
+
+```{python}
+#| code-fold: show
+#| code-summary: "Evaluate model for testing-set users not present in training set"
+# for testing-set users *not* present in training set
+I = list(set(data["te"]["ui"].row) - set(data["tr_full"]["ui"].row))
+_cond = cond.tolil()[I]
+_pred = pred.tolil()[I]
+print("for testing-set users not present in training set:")
+for s, f in metrics.items():
+    print("\t{}: {:f}".format(s, f(_cond, _pred)))
+```
+
+::: {.callout-tip icon="false"}
+## Practice
+
+Try modifying the hyper-parameters (defined in the `hyper` dictionary in
+Section 5). Re-train the model and see how the accuracy metrics are
+affected.
+:::
+
+# Compare to Baseline
+
+It might be informative to compare our recommender's performance to a
+simple baseline; for example, we might consider merely recommending
+items according to their popularity. We'll compute items' popularity
+from the training set such that the popularity of an item $i$ is the
+number of training-set interactions with $i$ divided by the total number
+of training-set interactions.
+
+```{python}
+#| code-fold: show
+#| code-summary: "Compute popularity of items for simple baseline"
+item_pop = np.ravel(
+    data["tr_full"]["ui"].sum(axis=0) / data["tr_full"]["ui"].sum()
+)
+assert item_pop.shape[0] == len(item_map)
+```
+
+Next we'll use these proportions to make recommendations for the testing
+set. This is easy: For each user-item pair $(u,i),$ the score of $(u,i)$
+is merely the popularity of $i$.
+
+```{python}
+#| code-fold: show
+#| code-summary: "Use popularity to make recommendations for test data"
+yhat = item_pop[data["te"]["ui"].col]
+```
+
+Now we can evaluate this simple algorithm like we've done for LightFM to
+compare the two.
+
+```{python}
+#| code-fold: show
+#| code-summary: "Evaluate simple baseline"
+cond = sp.coo_matrix(data["te"]["ui"])
+pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
+_cond = cond.tolil()
+_pred = pred.tolil()
+for s, f in metrics.items():
+    print("{}: {:f}".format(s, f(_cond, _pred)))
 ```
 
 # References
