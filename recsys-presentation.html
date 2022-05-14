@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="generator" content="quarto-0.9.230">
+  <meta name="author" content="Amanda Peterson">
+  <meta name="dcterms.date" content="2022-05-20">
+  <title>Tutorial: Recommender Systems</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="recsys-presentation_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="recsys-presentation_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="recsys-presentation_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+
+  <script src="recsys-presentation_files/libs/clipboard/clipboard.min.js"></script>
+  <script src="recsys-presentation_files/libs/quarto-html/tabby.min.js"></script>
+  <script src="recsys-presentation_files/libs/quarto-html/popper.min.js"></script>
+  <script src="recsys-presentation_files/libs/quarto-html/tippy.umd.min.js"></script>
+  <link href="recsys-presentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet">
+  <link id="quarto-text-highlighting-styles" href="recsys-presentation_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="recsys-presentation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.7em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-captioned.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-captioned) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-captioned.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-captioned .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-captioned .callout-caption  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-captioned.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-captioned.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-caption {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-caption {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-caption {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-captioned .callout-body > :last-child,
+  .callout.callout-captioned .callout-body > div > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-captioned .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-captioned) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-caption {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-caption {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-caption {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-caption {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-caption {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="center">
+  <h1 class="title">Tutorial:<br>Recommender Systems</h1>
+  <p class="author">Amanda Peterson</p>
+  <p class="date">May 20, 2022</p>
+</section>
+
+<section id="outline" class="slide level2">
+<h2>Outline</h2>
+<p><br></p>
+<ul>
+<li>Definitions</li>
+<li>Overview of “traditional” collaborative filtering &amp; hybrid models</li>
+<li>Deep learning for recommendation</li>
+<li>News recommendations</li>
+<li>Evaluation metrics</li>
+<li>Hands-on exercise</li>
+</ul>
+</section>
+<section id="why-recommender-systems" class="slide level2">
+<h2>Why Recommender Systems?</h2>
+<blockquote>
+<p>“The most exciting, the most powerful artificial intelligence systems space for the next couple of decades is recommender systems. They’re going to have the biggest impact on our society because they affect how the information is received, how we learn, what we think, how we communicate. These algorithms are controlling us and we have to really think deeply as engineers about how to speak up and think about their social implications.”</p>
+</blockquote>
+<p>-<a href="https://lexfridman.com/">Lex Fridman</a>, MIT Deep Learning and Artificial Intelligence Lectures: <a href="https://www.youtube.com/watch?v=0VH1Lim8gL8&amp;list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf">Deep Learning State of the Art 2020</a></p>
+</section>
+<section id="types-of-recommender-systems" class="slide level2">
+<h2>Types of Recommender Systems</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Collaborative Filtering</a></li><li><a href="#tabset-1-2">Content Filtering</a></li><li><a href="#tabset-1-3">Hybrid</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<p>Model patterns across all users’ <u>feedback history</u>.</p>
+<ul>
+<li><p><strong>Pro</strong>: Perform better than content filtering models when collaborative information is available.</p></li>
+<li><p><strong>Con</strong>: Unable to make recommendations in <u>cold start</u> scenarios where little history is available for new users or items.</p></li>
+</ul>
+</div>
+<div id="tabset-1-2">
+<p>Individualized models focus on a single user’s feedback history (or a group of like users) + metadata associated with items.</p>
+<ul>
+<li><p><strong>Pro</strong>: Able to handle new items.</p></li>
+<li><p><strong>Cons</strong>: Models for each user (or group) are fit in isolation. Require large amounts of data for each user.</p></li>
+</ul>
+</div>
+<div id="tabset-1-3">
+<p>Collaborative + Content Filtering</p>
+<ul>
+<li><strong>Pro</strong>: Overcomes challenges of both types of filtering. User <em>and</em> item metadata (aka <u>side information</u>) can be included.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="more-definitions" class="slide level2">
+<h2>More Definitions</h2>
+<p><strong>Explicit Feedback</strong> <strong>(or rating)</strong>: Explicit rating given by the user for a product (e.g.&nbsp;star rating, thumbs up/down)</p>
+
+<img data-src="images/star_rating.jpg" class="r-stretch"><p><strong>Implicit Feedback</strong>: Actions taken by the user which can be used infer preferences about products (e.g.&nbsp;click data, dwell time, purchases)</p>
+</section>
+<section id="user-item-rating-matrix" class="slide level2" data-transition="slide-in none-out">
+<h2>User-item Rating Matrix</h2>
+
+<img data-src="images/user_item_matrix.png" class="r-stretch"></section>
+<section id="user-item-rating-matrix-implicit" class="slide level2" data-transition="none">
+<h2>User-item Rating Matrix (Implicit)</h2>
+
+<img data-src="images/user_item_matrix_implicit.png" class="r-stretch"></section>
+<section id="data-sparsity" class="slide level2">
+<h2>Data Sparsity</h2>
+<p>Data used to learn recommendations is notoriously sparse.</p>
+<p>Examples:</p>
+<ul>
+<li><a href="https://grouplens.org/datasets/movielens/">MovieLens 25K</a>: 99.75% sparse</li>
+<li><a href="https://msnews.github.io/">Micrsoft News Dataset</a>: 99.98% sparse</li>
+<li><a href="https://cseweb.ucsd.edu//~jmcauley/pdfs/www16a.pdf">Amazon</a>: &gt; 99.99% sparse</li>
+</ul>
+</section>
+<section id="user-item-matrix-as-a-bipartite-graph" class="slide level2">
+<h2>User-Item Matrix as a Bipartite Graph</h2>
+
+<img data-src="images/bipartite.png" class="r-stretch quarto-figure-center"><p class="caption">Items represented as blue nodes (bottom). Users represented as pink nodes (top). User-item interactions represented by an edge. Edges colored according to a particular user feature.</p></section>
+<section id="recommender-technology-timeline" class="slide level2" data-transition="slide-in none-out" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Recommender Technology Timeline</h2>
+
+<img data-src="images/nick_pentreath_timeline.png" class="r-stretch"><p><a href="https://youtu.be/y_TzOOCJqxI">Presentation by Nick Pentreath at the 2018 Spark + AI Summit</a></p>
+<p><strong>2017 - 2022</strong>: Advances in deep learning for recommender systems.</p>
+</section>
+<section id="section" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 25px; left: 110px; width: 50px; height: 25px; "></p>
+<p><strong>Item-item similarity</strong>: Can be computed using cosine or Jaccard similarity, for example.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/user_item_matrix_item_sim.png" style="width:30.0%"></p>
+</figure>
+</div>
+</section>
+<section id="section-1" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 150px; left: 220px; width: 50px; height: 25px; "></p>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="images/netflix_fig2.png" height="275"></p>
+</div><div class="column" style="width:65%;">
+<div>
+<p><font size="5px"></font></p><font size="5px">
+<ul>
+<li class="fragment"><p>“Matrix Factorization”, a.k.a. latent factor model</p></li>
+<li class="fragment"><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in R^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in R^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_i^T p_i\)</span></p></li>
+<li class="fragment"><p><strong>Possible Solution</strong>: Compute the SVD of the user-item “matrix”.</p></li>
+<li class="fragment"><p><strong>Issue</strong>: How to impute missing values?</p></li>
+</ul>
+</font><p><font size="5px"></font></p>
+</div>
+</div>
+</div>
+
+<aside><div>
+<p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&amp;rep=rep1&amp;type=pdf">Matrix Facorization Techniques for Recommender Systems</a>. 2009. Koren, Bell, and Volinsky. IEEE COMPUTER.</p>
+</div></aside></section>
+<section id="section-2" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 150px; left: 220px; width: 50px; height: 25px; "></p>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="images/netflix_fig2.png" height="275"></p>
+</div><div class="column" style="width:65%;">
+<p><font size="5px"></font></p><font size="5px">
+<ul>
+<li><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in \mathbb{R}^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in \mathbb{R}^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_i^T p_i\)</span></p></li>
+<li><p><strong>Better Solution</strong>: Model ratings and solve via stochastic gradient decent.</p></li>
+</ul>
+<p><span class="math display">\[
+min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|| q_j ||^2 + || p_i ||^2)
+\]</span></p>
+</font><p><font size="5px"></font></p>
+</div>
+</div>
+
+<aside><div>
+<p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&amp;rep=rep1&amp;type=pdf">Matrix Facorization Techniques for Recommender Systems</a>. 2009. Koren, Bell, and Volinsky. IEEE COMPUTER.</p>
+</div></aside></section>
+<section id="section-3" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 150px; left: 220px; width: 50px; height: 25px; "></p>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p><img data-src="images/netflix_fig2.png" height="275"></p>
+</div><div class="column" style="width:65%;">
+<p><font size="4px"></font></p><font size="4px">
+<p><span class="math display">\[
+min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|| q_j ||^2 + || p_i ||^2)
+\]</span></p>
+</font><p><font size="4px"></font> <font size="5px"></font></p><font size="5px">
+<p><strong>Enhancements</strong>:</p>
+<ul>
+<li>Incorporate global and main (user, item) effects</li>
+<li>Incorporate weights</li>
+<li>Model as a function of time</li>
+<li>Ensemble many models</li>
+</ul>
+</font><p><font size="5px"></font></p>
+</div>
+</div>
+
+<aside><div>
+<p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.8295&amp;rep=rep1&amp;type=pdf">Matrix Facorization Techniques for Recommender Systems</a>. 2009. Koren, Bell, and Volinsky. IEEE COMPUTER.</p>
+</div></aside></section>
+<section id="section-4" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 25px; left: 360px; width: 50px; height: 25px; "></p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/factorization_machine.png" height="300"></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<p><font size="6px"> A hybrid model inspired by support vector machines (SVM) and factorization models. </font></p>
+<p><font size="5px"> <span class="math display">\[
+\hat{r}_{ij} = w_o + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n x_i x_j {\bf v}_i \cdot {\bf v}_j
+\]</span></font></p><font size="5px">
+</font><p><font size="5px"></font></p>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf">Factorization Machines</a>. 2010. IEEE International Conference on Data Mining. Steffen Rendle.</p>
+</div></aside></section>
+<section id="section-5" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 150px; left: 510px; width: 50px; height: 25px; "></p>
+<p><strong>Example</strong>: Pandora uses content associated with music that the listener has liked to recommend new music.</p>
+<div>
+<ul>
+<li class="fragment"><strong>Old</strong>: “Musicologists” manually entered features about songs (mood, tempo, artist, etc.)</li>
+<li class="fragment"><strong>New</strong>: Deep content models learn features from music audio</li>
+</ul>
+</div>
+</section>
+<section id="section-6" class="slide level2" data-transition="none" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"></h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nick_pentreath_timeline.png" style="width:70.0%"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 25px; left: 685px; width: 50px; height: 25px; "></p>
+<p><font size="6px"></font></p><font size="6px">
+<ul>
+<li><strong>2016-2017</strong>: Deep Learning for Recommender Systems (DLRS) Workshop at RecSys Conferences</li>
+</ul>
+</font><p><font size="6px"></font></p>
+<div>
+<p><font size="6px"></font></p><font size="6px">
+<ul>
+<li class="fragment"><p><strong>By 2018</strong> the DLRS workshop was discontinued in favor of presenting deep learning work in the main part of the conference.</p></li>
+<li class="fragment"><p><strong>Today</strong>: State-of-the art deep learning for all types of recommender systems.</p></li>
+</ul>
+</font><p><font size="6px"></font></p>
+</div>
+</section>
+<section id="section-7" class="slide level2">
+<h2></h2>
+<p><br></p>
+<div class="r-fit-text">
+<p><strong>Deep Learning Models<br>for Recommender Systems</strong></p>
+</div>
+</section>
+<section id="matrix-factorization-in-a-deep-learning-framework" class="slide level2">
+<h2>Matrix Factorization in a Deep Learning Framework</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/matrix_factorization.png" height="350"></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div>
+<ul>
+<li class="fragment">Use sigmoid prediction function and binary cross-entropy (log loss) for binary feedback</li>
+<li class="fragment">Use linear regression prediction function and MSE loss for 5-star ratings</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="wide-and-deep" class="slide level2">
+<h2>Wide and Deep</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/wide_and_deep.png" height="300"></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Model from Google</li>
+<li>Memorization + Generalization</li>
+<li>Example: <font size="6px">App recommendation. Input: Item indices, user side &amp; context info. Output: Binary (indicating app installation)</font></li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://arxiv.org/pdf/1606.07792.pdf">Wide &amp; Deep Learning for Recommender Systems</a>. 2016. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. Heng-Tze Cheng et. al.</p>
+</div></aside></section>
+<section id="ncf" class="slide level2">
+<h2>NCF</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/ncf.png" height="350"></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Previous RecSys Model for <a href="https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.">MLPerf</a></li>
+<li>Collaborative filtering only (no side features)</li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://arxiv.org/pdf/1708.05031.pdf">Neural Collaborative Filtering</a>. 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He et. al.</p>
+</div></aside></section>
+<section id="deepfm" class="slide level2">
+<h2>DeepFM</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/deepfm.png" height="350"></p>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Model from Huawei</li>
+<li>Inspired by Factorization Machines</li>
+<li>Example: <font size="6px"><a href="https://www.kaggle.com/competitions/criteo-display-ad-challenge/data">Criteo dataset</a> (13 integer features, 26 categorical features, binary labels.)</font></li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://www.ijcai.org/proceedings/2017/0239.pdf">DeepFM: A Factorization-Machine based Neural Network for CTR Prediction</a>. 2017. Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelligence. (IJCAI-17). Huifeng Guo et. al.</p>
+</div></aside></section>
+<section id="dlrm" class="slide level2">
+<h2>DLRM</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/DLRM.png" height="350"></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Model from Facebook</li>
+<li>Current <a href="https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.">MLPerf</a> RecSys model</li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://arxiv.org/abs/1906.00091">Deep Learning Recommendation Model for Personalization and Recommendation Systems</a>. 2019. arXiv. Maxim Naumov et. al.&nbsp;</p>
+</div></aside></section>
+<section id="dcn-v2" class="slide level2">
+<h2>DCN-V2</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/dcnv2.png" height="400"></p>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Model from Google</li>
+<li>Parallel and stacked versions</li>
+<li>Cross Network: <span class="math inline">\(x_{i+1} = x_0 (Wx_i + b) + x_i\)</span></li>
+<li>Claims to beat DLRM and DeepFM on <a href="https://www.kaggle.com/competitions/criteo-display-ad-challenge/data">Criteo</a> and <a href="https://grouplens.org/datasets/movielens">MovieLens</a> datasets</li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://arxiv.org/pdf/2008.13535.pdf">DCN V2: Improved Deep &amp; Cross Network and Practical Lessons for Web-scale Learning to Rank Systems</a>. 2021. In Proceedings of the Web Conference 2021 (WWW ’21). Association for Computing Machinery. Ruoxi Wang et. al.</p>
+</div></aside></section>
+<section id="dcn-v2-under-the-hood" class="slide level2">
+<h2>DCN-V2: Under the Hood</h2>
+<p>We can consider the weight matrix W in the first cross layer.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/explain.png" height="300"></p>
+<p></p><figcaption aria-hidden="true">DCN-V2: Visualization of learned weight matrix in DCN-V2. Rows and columns represents real features. For (a), feature names were not shown for proprietary reasons; darker pixel represents larger weight in its absolute value. Orange boxes highlight notable feature crosses. For (b), each block represents the Frobenius norm of each matrix block.</figcaption><p></p>
+</figure>
+</div>
+<aside class="notes">
+<p>From the DCN-V2 paper: “The off-diagonal block corresponds to crosses that are known to be important, suggesting the effectiveness of DCN-V2. The diagonal block represents selfinteraction (<span class="math inline">\(x^2\)</span>’s). Subplot (b) shows each block’s Frobenius norm and indicates some strong interactions learned, e.g., Gender x UserId, MovieId x UserId.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="terminology-two-tower-sysetms" class="slide level2">
+<h2>Terminology: Two-tower Sysetms</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/two-tower.png" height="400"></p>
+</figure>
+</div>
+</div><div class="column" style="width:40%;">
+<p><br>Used for item retreival (as opposed to ranking).</p>
+</div>
+</div>
+
+<aside><div>
+<p>Image source: <a href="https://www.linkedin.com/pulse/personalized-recommendations-iv-two-tower-models-gaurav-chakravorty">linkedin.com/pulse/personalized-recommendations-iv-two-tower-models-gaurav-chakravorty</a>. See also <a href="https://storage.googleapis.com/pub-tools-public-publication-data/pdf/6c8a86c981a62b0126a11896b7f6ae0dae4c3566.pdf">Sampling-Bias-Corrected Neural Modeling for Large Corpus Item Recommendations</a>. In Thirteenth ACM Conference on Recommender Systems (RecSys 2019). Yi et al.</p>
+</div></aside></section>
+<section id="additional-reading-deep-learning-for-recsys" class="slide level2">
+<h2>Additional Reading: Deep Learning for RecSys</h2>
+<p><br><br> <a href="https://arxiv.org/pdf/1707.07435.pdf">Deep Learning based Recommender System: A Survey and New Perspectives</a>. 2018. ACM Comput. Surv. 1, 1, Article 1. Zhang et al.</p>
+</section>
+<section id="section-8" class="slide level2">
+<h2></h2>
+<p><br><br></p>
+<div class="r-fit-text">
+<p><strong>News Recommendation</strong></p>
+</div>
+</section>
+<section id="mind" class="slide level2">
+<h2>MIND</h2>
+<p><br><br></p>
+<p>We’re working with the <strong>Mi</strong>crosoft <strong>N</strong>ews <strong>D</strong>ataset this summer!</p>
+
+<aside><div>
+<p><a href="https://msnews.github.io/assets/doc/ACL2020_MIND.pdf">MIND: A Large-scale Dataset for News Recommendation</a>. ACL 2020. Wu et al.</p>
+</div></aside></section>
+<section id="challenges-of-news-recommendation" class="slide level2" data-transition="slide-in none-out">
+<h2>Challenges of News Recommendation</h2>
+<ol class="example" type="1">
+<li><strong>Severe cold start problem</strong>: New articles posted continuously. Usefulness of articles diminishes quickly.</li>
+</ol>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><img data-src="images/survival_mind.png"></p>
+<p></p><figcaption aria-hidden="true">Survival time distribution of news articles</figcaption><p></p>
+</figure>
+</div>
+</div><div class="column" style="width:60%;">
+<ul>
+<li>Survival time of more than 84.5% news articles is less than two days.</li>
+<li>Estimated using the time interval between first and last appearance time of articles in the MIND dataset.</li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p>Image sourced from the <a href="https://msnews.github.io/assets/doc/ACL2020_MIND.pdf">MIND paper</a>.</p>
+</div></aside></section>
+<section id="challenges-of-news-recommendation-1" class="slide level2" data-transition="none">
+<h2>Challenges of News Recommendation</h2>
+<ol start="2" class="example" type="1">
+<li>A user may get bored by a news feed with <strong>lack of diversity</strong>. Articles from a variety of topics may be more interesting.</li>
+<li><strong>Overly personalized</strong> news feeds give can give a narrow view of the world.</li>
+</ol>
+<p>The last point can be a result of over-emphasis on prediction accuracy. Beyond-accuracy metrics may help.</p>
+</section>
+<section id="nrms" class="slide level2">
+<h2>NRMS</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="images/nrms.png"></p>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Model from Microsoft</li>
+<li>Best performing model in the <a href="https://aclanthology.org/2020.acl-main.331.pdf">MIND paper</a>.</li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://wuch15.github.io/paper/EMNLP2019-NRMS.pdf">Neural News Recommendation with Multi-Head Self-Attention</a>. 2019. Wue et. al.</p>
+</div></aside></section>
+<section id="suggested-reading-news-recommendation" class="slide level2">
+<h2>Suggested Reading: News Recommendation</h2>
+<ul>
+<li><p><a href="https://msnews.github.io/assets/doc/1.pdf">Technical Report</a> on Champion Solution for the <a href="https://msnews.github.io/competition.html">2020 MIND News Recommendation Challenge</a></p></li>
+<li><p><a href="https://doi.org/10.1007/s10462-021-10043-x">News recommender system: a review of recent progress, challenges, and opportunities</a>. 2022. Artificial Intelligence Review. Raza, S., Ding, C.</p></li>
+</ul>
+
+<aside><div>
+
+</div></aside></section>
+<section id="section-9" class="slide level2">
+<h2></h2>
+<p><br><br><br></p>
+<div class="r-fit-text">
+<p><strong>Evaluation of RecSys Models</strong></p>
+</div>
+</section>
+<section id="evaluation-metrics-for-recommendation-systems" class="slide level2">
+<h2>Evaluation Metrics for Recommendation Systems</h2>
+<p><img data-src="images/evalrs.png" class="absolute" style="top: 0px; left: 800px; width: 180px; height: 200px; "></p>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Accuracy</a></li><li><a href="#tabset-2-2">Beyond accuracy</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<ul>
+<li>Hit Rate at <span class="math inline">\(k\)</span> (HR@<span class="math inline">\(k\)</span>)</li>
+<li>Mean Average Precision at <span class="math inline">\(k\)</span> (MAP@<span class="math inline">\(k\)</span>)</li>
+<li>Normalized Discounted Cumulative Gain (NDCG@<span class="math inline">\(k\)</span>)</li>
+<li>Mean Reciprocal Rank (MRR)</li>
+</ul>
+</div>
+<div id="tabset-2-2">
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li>Diversity at k (Div@k)</li>
+<li>Novelty at k (Nov@k)</li>
+<li>Catalog coverage (CC)</li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="callout callout-tip callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong></strong></p>
+</div>
+<div class="callout-content">
+<p>Unlike accuracy metrics, which are computed using a test set, beyond-accuracy metrics are computed on the final recommendation list.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="hit-rate" class="slide level2">
+<h2>Hit Rate</h2>
+<p><br></p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Hit rate at <span class="math inline">\(k\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p>Percent of users who had a “positive” item in their top-<span class="math inline">\(k\)</span> recommendation list.</p>
+</div>
+</div>
+</div>
+<p><br> No penalization for location of positive(s) in list.</p>
+</section>
+<section id="mean-average-precision" class="slide level2">
+<h2>Mean Average Precision</h2>
+<p>Contrary to HR@<span class="math inline">\(k\)</span>, we penalize for “positive” items that are lower in the list (considering the top <span class="math inline">\(k\)</span> only).</p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Average precision at <span class="math inline">\(k\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math display">\[
+AP@k = \frac{1}{m} ∑_{i=1}^k P(i) * rel(i)
+\]</span> where <span class="math inline">\(P(i)\)</span> is the precision at <span class="math inline">\(i\)</span> of the <span class="math inline">\(i^{th}\)</span> item, <span class="math inline">\(rel(i)\)</span> is the relevance of the <span class="math inline">\(i^{th}\)</span> item (0 or 1), and <span class="math inline">\(m=min(k, \text{number of relevant items in full item space})\)</span>.</p>
+</div>
+</div>
+</div>
+<p>Calculate the mean over all users to obtain MAP@<span class="math inline">\(k\)</span>.</p>
+
+<aside><div>
+<p>See <a href="https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html">this blog post</a> for a detailed overview.</p>
+</div></aside></section>
+<section id="ndcg" class="slide level2">
+<h2>NDCG</h2>
+<p>Similar to MAP@<span class="math inline">\(k\)</span>, NDCG@<span class="math inline">\(k\)</span> also penalizes “positive” items that are lower on the recommendation list.</p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Normalized Discounted Cumulative Gain at <span class="math inline">\(k\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math display">\[
+NDCG@k = \frac{DCG_k}{IDCG_k}, \text{ where } DCG_k =  \sum_{i=1}^k \frac{rel(i)}{log_2(i+1)} \text{ and } IDCG_k = \sum_{i=1}^{|REL_k|} \frac{rel(i)}{log_2(i+1)}
+\]</span></p>
+</div>
+</div>
+</div>
+<p>REL<span class="math inline">\(_k\)</span> is the list of <span class="math inline">\(k\)</span> relevant items. The “I” in IDCG stands for “ideal.” The above is computed for each user and then averaged over all users.</p>
+</section>
+<section id="mean-reciprocal-rank" class="slide level2">
+<h2>Mean Reciprocal Rank</h2>
+<p>The mean across users of the reciprocal rank of their first relevant item.</p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Mean Reciprocal Rank</strong></p>
+</div>
+<div class="callout-content">
+<p>Let <span class="math inline">\(u\)</span> be a user in the set of users <span class="math inline">\(U\)</span>. Let <span class="math inline">\(r_u\)</span> be the rank of the first relevant item for user <span class="math inline">\(u\)</span>. Then,<br>
+<span class="math display">\[
+MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
+\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="beyond-accuracy-catalog-coverage" class="slide level2">
+<h2>Beyond Accuracy: Catalog Coverage</h2>
+<p><br></p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Catalog coverage at <span class="math inline">\(k\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p>The percentage of the full set of items that are recommended to at least one user (considering users’ top-<span class="math inline">\(k\)</span> recommendation lists).</p>
+</div>
+</div>
+</div>
+</section>
+<section id="beyond-accuracy-diversity" class="slide level2">
+<h2>Beyond Accuracy: Diversity</h2>
+<p><br></p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Diversity at <span class="math inline">\(k\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p>Aggregate (mean) dissimilarity between pairs of user’s recommendation lists. <br><br> Dissimilarity (<span class="math inline">\(1 - \text{similarity}\)</span>) can be computed using metrics such as Jaccard similarity, Kendall’s <span class="math inline">\(\tau\)</span>, or Spearman’s footrule.</p>
+</div>
+</div>
+</div>
+
+<aside><div>
+<p>Ronald Fagin, Ravi Kumar and D. Sivakumar. 2003. Comparing top k lists. SIAM J. Discrete Mathematics 17, 1, 134–160.</p>
+</div></aside></section>
+<section id="beyond-accuracy-novelty" class="slide level2">
+<h2>Beyond Accuracy: Novelty</h2>
+<p><br></p>
+<div class="callout callout-note no-icon callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<p><strong>Novelty at <span class="math inline">\(k\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p>Item novelty is the proportion of all users to whom the item is <em>not</em> recommended (considering all users’ top-<span class="math inline">\(k\)</span> recommendation lists). Nov@<span class="math inline">\(k\)</span> is the mean item novelty over all users’ top-<span class="math inline">\(k\)</span> items.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="section-11" class="slide level2">
+<h2></h2>
+<p><br></p>
+<div class="callout callout-tip callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<p>Use as many metrics as possible (some are better than others for different tasks)</p>
+</div>
+</div>
+</div>
+<div class="callout callout-warning callout-captioned callout-style-default">
+<div class="callout-body">
+<div class="callout-caption">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Warning</strong></p>
+</div>
+<div class="callout-content">
+<p>Definitions and implementations of metrics can differ between software. It’s important to use the same implementation when comparing models.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="section-12" class="slide level2">
+<h2></h2>
+<p><br><br><br></p>
+<div class="r-fit-text">
+<p>Final Thoughts</p>
+</div>
+</section>
+<section id="tips" class="slide level2">
+<h2>Tips</h2>
+<ul>
+<li><strong>Ranking vs retrieval</strong>: If there are too many items to score, run a query to obtain a user’s “candidate” recommended items. Use RecSys model to rank the candidates..</li>
+<li><strong>Sampling negative examples</strong>: Weight items by popularity. This will better penalize popular items that can be recommended</li>
+</ul>
+</section>
+<section id="more-tips" class="slide level2">
+<h2>More Tips</h2>
+<p>Personalized recommendations in conjunction with other types of recommendations can provide a more satisfying experience.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/ui_sketch.png"></p>
+</figure>
+</div>
+<p><img data-src="images/red_arrow.png" class="absolute" style="top: 507px; left: 355px; width: 50px; height: 25px; "></p>
+</section>
+<section id="advice" class="slide level2">
+<h2>Advice</h2>
+<p><em><a href="https://dl.acm.org/doi/pdf/10.1145/3298689.3347058">Are we really making much progress? A worrying analysis of recent neural recommendation approaches.</a></em></p>
+<ul>
+<li>Make code/analysis/tuning/data reproducible.</li>
+<li>Use as many baseline algorithms as possible (including non-NN)</li>
+<li>Use as many metrics as possible (some are better than others for different tasks)</li>
+</ul>
+
+<aside><div>
+<p>Paper published in the Thirteenth ACM Conference on Recommender Systems (2019) by Maurizio et al.</p>
+</div></aside></section>
+<section id="additional-reading" class="slide level2">
+<h2>Additional Reading</h2>
+<p><font size="6px"></font></p><font size="6px">
+<p><strong><a href="https://github.com/hongleizhang/RSPapers">Recommender Systems Paper Repository</a></strong></p>
+<p><strong>Explainable Recommendations</strong></p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2202.06466.pdf">Measuring “Why” in Recommender Systems: a Comprehensive Survey on the Evaluation of Explainable Recommendation</a>. 2022. Chen, Zhang, and Wen.</li>
+</ul>
+<p><strong>Knowledge graphs</strong></p>
+<ul>
+<li><p><a href="https://arxiv.org/pdf/2004.00387.pdf">Deep Learning on Knowledge Graph for Recommender System: A Survey</a>. 2020. Association for Computing Machinery. Gao et al.</p></li>
+<li><p><a href="https://doi.org/10.3390/info12060232">A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development, and Contributions</a>. 2021. MDPI Information Journal. Chicaiza and Valdiviezo-Diaz.</p></li>
+</ul>
+</font><p><font size="6px"></font></p>
+</section>
+<section id="code" class="slide level2">
+<h2>Code</h2>
+<p><br></p>
+<ul>
+<li>Microsoft GitHub Repo: <a href="https://github.com/microsoft/recommenders">https://github.com/microsoft/recommenders</a></li>
+<li>Tensorflow: <a href="https://www.tensorflow.org/recommenders">https://www.tensorflow.org/recommenders</a></li>
+<li>R Keras: <a href="https://github.com/AmandaRP">https://github.com/AmandaRP</a></li>
+</ul>
+</section>
+<section id="section-13" class="slide level2">
+<h2></h2>
+<div class="r-fit-text">
+<p>Questions?</p>
+</div>
+<center>
+<p>Slides are available at: TODO</p>
+</center>
+<div class="footer footer-default">
+<p>SCADS 2022 RecSys Tutorial</p>
+</div>
+</section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="recsys-presentation_files/libs/revealjs/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="recsys-presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="recsys-presentation_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          // dispatch for htmlwidgets
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for reveal
+        if (window.Reveal) {
+          window.Reveal.addEventListener("slidechanged", function(event) {
+            fireSlideChanged(event.previousSlide, event.currentSlide);
+          });
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        target: function(trigger) {
+          return trigger.previousElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        setTimeout(function() {
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto-reveal',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          let href = ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+        tippyHover(ref, function() {
+          var popup = window.document.createElement('div');
+          cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    });
+    </script>
+    
+
+</body></html>
