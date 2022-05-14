@@ -11,7 +11,6 @@ format:
     navigation-mode: linear
     transition: slide
     background-transition: fade
-    #logo: "images/thumb.png"
 #header-includes: \usepackage{amsmath}
 ---
 
@@ -874,8 +873,9 @@ and Contributions](https://doi.org/10.3390/info12060232). 2021. MDPI Information
 <br>
 
 - Microsoft GitHub Repo: [https://github.com/microsoft/recommenders](https://github.com/microsoft/recommenders)
+
 - Tensorflow: [https://www.tensorflow.org/recommenders](https://www.tensorflow.org/recommenders)
-- R Keras: [https://github.com/AmandaRP](https://github.com/AmandaRP)
+
 
 ## 
 
