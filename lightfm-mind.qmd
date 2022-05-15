@@ -174,8 +174,9 @@ For example, the following chunk if evaluated will attempt to fetch the
 small variant's training and validation sets.
 
 ```{python}
-#| eval: false
 #| code-summary: "Fetch data example"
+#| eval: false
+#| code-fold: show
 fetch_mind([
     "MINDsmall_train.zip",
     "MINDsmall_dev.zip"
@@ -189,7 +190,7 @@ process it for analysis.
 
 ## Structure of MIND
 
-Each official partition of MIND comprises:
+Each partition of MIND comprises:
 
 -   behaviors data (file named "behaviors.tsv")
 
@@ -206,16 +207,16 @@ but a few details will be repeated here for the sake of this tutorial.
 
 ### Behaviors data
 
-The behaviors data comprise users' implicit feedback about news items in
-the form of history logs and so-called impressions logs. MIND was
-assembled from click-activity that occurred over several weeks and the
+The behaviors dataset contains users' implicit feedback about news items in
+the form of history logs and impressions logs. MIND was
+assembled from click-activity that occurred over several weeks; the
 history log is a list of items that a user is known to have consumed
 during an initial portion this period. The impressions log is a list of
 items that were displayed to a user at a particular time afterward
-together with the user's implicit feedback about these items.
+together with the user's implicit feedback about these items (1 = click, 0 = no click).
 
 ```{python}
-#| code-summary: "Name of behaviors file"
+#| code-summary: "Set name of behaviors file"
 behaviors = "behaviors.tsv"
 ```
 
@@ -246,9 +247,9 @@ def get_behaviors(path):
 
 ### News data
 
-The news data comprise metadata about the news items that may be present
-in the behaviors data's history logs and impressions logs, such as
-category, sub-category and named entities.
+The news data is comprised of metadata about the news items that may be present
+in the history and impressions logs of the behavior data. Fields include
+category, sub-category, and named entities.
 
 ```{python}
 #| code-summary: "Set name of news data file"
@@ -281,11 +282,11 @@ def get_news(path):
 
 ### Entity-embeddings data
 
-The entity-embeddings data are one-hundred dimensional embeddings of
-some of the news data's named entities.
+The entity-embeddings dataset contains one-hundred dimensional embeddings of
+some of the named entities in the news dataset.
 
 ```{python}
-#| code-summary: "Set file name of entity embeddings file"
+#| code-summary: "Set name of entity embeddings file"
 entity_embeddings = "entity_embedding.vec"
 ```
 
@@ -311,14 +312,15 @@ def get_embeddings(path):
 
 ### Relation-embeddings data
 
-The relation-embeddings data are one-hundred dimensional embeddings of
-knowledge-graph relations of some of the news data's named entities. We
+The relation-embeddings dataset contains one-hundred dimensional embeddings of
+knowledge-graph relations of some of the named entities in the news dataset. We
 won't do anything with them here.
 
 ## Read data
 
 ```{python}
 #| code-summary: "Select data sets"
+#| code-fold: show
 dir_training = "MINDsmall_train"
 dir_testing  = "MINDsmall_dev"
 ```
@@ -351,10 +353,10 @@ for k, v in data["tr"].items():
 
 ## Partition training set
 
-As mentioned previously, we'll partition the training set in two to
-reserve some data for validation. Our partitioning scheme will reserve
+As mentioned previously, we'll partition the training set in two, reserving 
+some data for validation. Our partitioning scheme will reserve
 for validation the training-set data from the most recent day on which
-training data were collected; the remainder will be retained for
+training data was collected; the remainder will be retained for
 training during hyperparameter-tuning. In addition, we'll retain the
 complete training set for training a final model after having completed
 the hyperparameter-tuning.
@@ -386,13 +388,13 @@ for k in ["tr", "va"]:
 
 ## Assemble interactions matrices
 
-For each subset of the data-set (training, validation, testing) we'll
-require a sparse matrix in coordinate-list format of user-item
-interactions whose rows correspond to users, whose columns correspond to
-items and whose entries specify the users' implicit feedback about the
+For each subset of the data (training, validation, testing) we'll
+require a sparse matrix (in coordinate-list format) of user-item
+interactions. The rows correspond to users, columns correspond to
+items and entries specify the users' implicit feedback about the
 items; something like the following for each partition of the data-set,
 where ones indicate (implicit) positive feedback and zeros (implicit)
-negative feedback,
+negative feedback.
 
             item_1 item_2 ... item_n
     user_1 [     1      0 ...      1]
@@ -418,7 +420,7 @@ The correspondence between users and rows and between items and columns
 must be the same for all partitions of the data-set, so that for example
 user $u$ is associated with row $r$ and item $i$ with column $c$
 irrespective of whether $(u,i)$ comes from the training set, from the
-validation set or from the testing set.
+validation set or from the testing set. To facilitate this, we'll create maps.
 
 ```{python}
 #| code-summary: "Create user map"
@@ -454,7 +456,7 @@ for k, v in data.items():
         data[k]["ui"].count_nonzero()))
 ```
 
-We needn't store explicit zeros in the training-set interactions matrix:
+We need not store explicit zeros in the training-set interactions matrix:
 Implicit zeros will suffice for training, because LightFM does its own
 sampling of implicit negatives.
 
@@ -473,9 +475,9 @@ for which to make predictions during validation and during testing.
 In addition to interactions data, LightFM can incorporate data about the
 interactions into the recommendation system; we'll call these additional
 data "features". In particular, we can incorporate user-features and
-item-features by passing LightFM separate sparse matrices whose rows
+item-features (a.k.a. side information) by passing LightFM separate sparse matrices whose rows
 correspond to users and to items respectively, whose columns correspond
-to features and whose entries specify the users' and the items' values
+to features, and whose entries specify the users' and the items' values
 for these features.
 
 ### User-features
@@ -665,6 +667,7 @@ items' titles and abstracts with some more complex pre-processing.
 
 ```{python}
 #| code-summary: "Choose item features"
+#| code-fold: show
 # Comment out any of the entries of `which_item_ft' to exclude these from the
 # features matrix.
 which_item_ft = [
@@ -911,29 +914,22 @@ The LifghtFM module does not provide access to the loss function, so
 earlier stopping will be based on an accuracy-based metric.
 
 ```{python}
+#| code-summary: "Define functions used for early stopping"
 #| code-fold: show
-#| code-summary: "For early-stopping based on normalized discounted cumulative gain"
+
+# For early-stopping based on normalized discounted cumulative gain
 def mean_ndcg(cond, pred):
     return mean_row_stat(cond, pred, ndcg)
-```
 
-```{python}
-#| code-fold: show
-#| code-summary: "For early-stopping based on hit-rate at k"
+# For early-stopping based on hit-rate at k
 def mean_hrk(cond, pred):
     return mean_row_stat(cond, pred, hrk)
-```
 
-```{python}
-#| code-fold: show
-#| code-summary: "For early-stopping based on mean reciprocal rank"
+# For early-stopping based on mean reciprocal rank
 def mean_recip_rank(cond, pred):
     return mean_row_stat(cond, pred, recip_rank)
-```
 
-```{python}
-#| code-fold: show
-#| code-summary: "Function definition enabling collection of metrics"
+# Function definition enabling collection of metrics
 def mean_row_stat(a, b, f):
     """
     Return mean of `f' applied in parallel to corresponding non-zero rows
@@ -945,7 +941,6 @@ def mean_row_stat(a, b, f):
 ```
 
 ```{python}
-#| code-fold: show
 #| code-summary: "Setup for parallel processing"
 def n_avail_cpu():
     """Return the number of central processing units available for use."""
@@ -953,8 +948,9 @@ def n_avail_cpu():
 ```
 
 ```{python}
-#| code-fold: show
-#| code-summary: "Define evaluation metric: Normalized Discounted Cummulative Gain"
+#| code-summary: "Define evaluation metrics"
+
+# Normalized Discounted Cummulative Gain
 def ndcg(cond, pred, k=5):
     """
     Compute normalized discounted cumulative gain at k = `k' of list
@@ -963,11 +959,8 @@ def ndcg(cond, pred, k=5):
     a = np.array(cond).reshape(1, -1)
     b = np.array(pred).reshape(1, -1)
     return ndcg_score(a, b, k=k)
-```
 
-```{python}
-#| code-fold: show
-#| code-summary: "Define evaluation metric: Hit rate at k"
+# Hit rate at k
 def hrk(rel_true, rel_pred, k=5):
     """
     Return hit-rate at `k', that is, the proportion of relevant items
@@ -983,11 +976,8 @@ def hrk(rel_true, rel_pred, k=5):
     qs = (r <= k for r in rankdata([-rel_pred[j] for j in js], "ordinal"))
     den = sum(ps)
     return inf if not den else sum(p & q for p, q in zip(ps, qs)) / den
-```
 
-```{python}
-#| code-fold: show
-#| code-summary: "Define evaluation metric: Reciprocal rank"
+# Reciprocal rank
 def recip_rank(rel, pred):
     """
     Return reciprocal rank of first relevant (`rel' > 0) element, where ranks
@@ -1014,7 +1004,7 @@ def recip_rank(rel, pred):
 #hyper["stop_crit"] = mean_ndcg
 ```
 
-If early-stopping is disabled then we'll merely train a recommender with
+If early-stopping is disabled (above) then we'll merely train a recommender with
 the specified values of hyper-parameters on the full training set.
 Otherwise, we'll train on the reduced training set and evaluate the
 model after each epoch of training on the validation set until reaching
@@ -1090,7 +1080,7 @@ else:
 
 Let's evaluate our trained recommender on the testing set. We'll compute
 the evaluation metrics in `metrics` (see below) from the recommender's
-predictions for the testing set's user-item pairs.
+predictions for the user-item pairs in the testing set.
 
 ```{python}
 #| code-fold: show
@@ -1114,6 +1104,7 @@ yhat = model.predict(
 )
 ```
 
+
 ```{python}
 #| code-fold: show
 #| code-summary: "Evaluate model for all users"
@@ -1129,6 +1120,11 @@ print("for all users:")
 for s, f in metrics.items():
     print("\t{}: {:f}".format(s, f(_cond, _pred)))
 ```
+
+
+Note that there are users in the test set, which were not in the training set 
+(a "cold start" situation). Below we consider two sets of users: (1) those that appear 
+in both train and test, and (2) those that appear only in the test set.
 
 ```{python}
 #| code-fold: show
@@ -1153,6 +1149,8 @@ print("for testing-set users not present in training set:")
 for s, f in metrics.items():
     print("\t{}: {:f}".format(s, f(_cond, _pred)))
 ```
+
+Note the (slight) difference in accuracy metrics between the two groups of users above.
 
 ::: {.callout-tip icon="false"}
 ## Practice
@@ -1195,7 +1193,7 @@ compare the two.
 
 ```{python}
 #| code-fold: show
-#| code-summary: "Evaluate simple baseline"
+#| code-summary: "Evaluate simple baseline on all users in test set"
 cond = sp.coo_matrix(data["te"]["ui"])
 pred = sp.coo_matrix((yhat, (cond.row, cond.col)), shape=cond.shape)
 _cond = cond.tolil()
@@ -1203,5 +1201,10 @@ _pred = pred.tolil()
 for s, f in metrics.items():
     print("{}: {:f}".format(s, f(_cond, _pred)))
 ```
+
+Notice the difference in these accuracy metrics compared to the those associated
+with the LightFM model. 
+
+
 
 # References
