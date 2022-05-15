@@ -2624,7 +2624,7 @@ vertical-align: -.125em;
 <header id="title-block-header" class="quarto-title-block default">
 
 
-<div class="quarto-title"><div class="quarto-title-block"><div><h1 class="title">Application of LightFM to Microsoft News Dataset</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div></div><div class="quarto-title-meta"><div><div class="quarto-title-meta-heading">Published</div><div class="quarto-title-meta-contents"><p class="date">03:49:53 +0000, Sunday, May 15, 2022</p></div></div></div></header>
+<div class="quarto-title"><div class="quarto-title-block"><div><h1 class="title">Application of LightFM to Microsoft News Dataset</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div></div><div class="quarto-title-meta"><div><div class="quarto-title-meta-heading">Published</div><div class="quarto-title-meta-contents"><p class="date">04:26:00 +0000, Sunday, May 15, 2022</p></div></div></div></header>
 
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
@@ -3123,31 +3123,31 @@ user_m [1/k_user_m 1/k_user_m ...          0]</code></pre>
 <span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>        uft_map[s][blk_name] <span class="op">=</span> col_map</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-stdout">
-<pre><code>tr-set block `history' has 94057 rows, 44908 columns, 871130 non-zero entries</code></pre>
+<pre><code>tr-set block `history' has 94057 rows, 44908 columns, 871130 non-zero entries
+te-set block `history' has 94057 rows, 44908 columns, 1259580 non-zero entries</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>te-set block `history' has 94057 rows, 44908 columns, 1259580 non-zero entries
-va-set block `history' has 94057 rows, 44908 columns, 502937 non-zero entries</code></pre>
-</div>
-<div class="cell-output-stdout">
-<pre><code>tr_full-set block `history' has 94057 rows, 44908 columns, 915011 non-zero entries</code></pre>
+<pre><code>va-set block `history' has 94057 rows, 44908 columns, 502937 non-zero entries
+tr_full-set block `history' has 94057 rows, 44908 columns, 915011 non-zero entries</code></pre>
 </div>
 </div>
 <p>We can now combine the blocks of the user-features matrices.</p>
 <div class="cell" data-execution_count="26">
 <details>
 <summary>Combine blocks of the user-features</summary>
-<div class="sourceCode" id="cb45"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> data.keys():</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    data[k][<span class="st">"uft"</span>] <span class="op">=</span> sp.hstack([x <span class="cf">for</span> x <span class="kw">in</span> uft_blk[k].values()], <span class="bu">format</span><span class="op">=</span><span class="st">"csr"</span>)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>((<span class="st">"</span><span class="sc">{}</span><span class="st">-set user-features matrix has </span><span class="sc">{}</span><span class="st"> rows, </span><span class="sc">{}</span><span class="st"> columns, "</span></span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{}</span><span class="st"> non-zero entries"</span>).<span class="bu">format</span>(k, <span class="op">*</span>data[k][<span class="st">"uft"</span>].shape,</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>        data[k][<span class="st">"uft"</span>].count_nonzero()))</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> data[k][<span class="st">"uft"</span>].shape <span class="op">==</span> (<span class="dv">0</span>, <span class="dv">0</span>):</span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>        data[k][<span class="st">"uft"</span>].shape <span class="op">=</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> data.keys():</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    data[k][<span class="st">"uft"</span>] <span class="op">=</span> sp.hstack([x <span class="cf">for</span> x <span class="kw">in</span> uft_blk[k].values()], <span class="bu">format</span><span class="op">=</span><span class="st">"csr"</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>((<span class="st">"</span><span class="sc">{}</span><span class="st">-set user-features matrix has </span><span class="sc">{}</span><span class="st"> rows, </span><span class="sc">{}</span><span class="st"> columns, "</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> <span class="st">"</span><span class="sc">{}</span><span class="st"> non-zero entries"</span>).<span class="bu">format</span>(k, <span class="op">*</span>data[k][<span class="st">"uft"</span>].shape,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>        data[k][<span class="st">"uft"</span>].count_nonzero()))</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> data[k][<span class="st">"uft"</span>].shape <span class="op">==</span> (<span class="dv">0</span>, <span class="dv">0</span>):</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>        data[k][<span class="st">"uft"</span>].shape <span class="op">=</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-stdout">
-<pre><code>tr-set user-features matrix has 94057 rows, 138965 columns, 965187 non-zero entries
-te-set user-features matrix has 94057 rows, 138965 columns, 1353637 non-zero entries
+<pre><code>tr-set user-features matrix has 94057 rows, 138965 columns, 965187 non-zero entries</code></pre>
+</div>
+<div class="cell-output-stdout">
+<pre><code>te-set user-features matrix has 94057 rows, 138965 columns, 1353637 non-zero entries
 va-set user-features matrix has 94057 rows, 138965 columns, 596994 non-zero entries
 tr_full-set user-features matrix has 94057 rows, 138965 columns, 1009068 non-zero entries</code></pre>
 </div>
@@ -3394,7 +3394,7 @@ tr_full-set item-features matrix has 22771 rows, 45605 columns, 124622 non-zero 
 <p>We’re ready to train a recommender by means of LightFM. There are many hyper-parameters to specify, such as the dimension of the latent feature space, the optimization criterion and the number of iterations of training. For simplicity, we’ll leave many unspecified, which will therefore assume LightFM’s default values. More information is available <a href="https://making.lyst.com/lightfm/docs/lightfm.html">here</a>.</p>
 <div class="cell" data-execution_count="37">
 <details open="">
-<summary>Set hyper-parmaters</summary>
+<summary>Set hyper-parameters</summary>
 <div class="sourceCode" id="cb66"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>hyper <span class="op">=</span> {</span>
 <span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dim"</span>:      <span class="dv">50</span>,</span>
 <span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"loss"</span>:     <span class="st">"bpr"</span>, <span class="co"># Bayesian personalized ranking</span></span>
@@ -3454,7 +3454,7 @@ tr_full-set item-features matrix has 22771 rows, 45605 columns, 124622 non-zero 
 <div class="cell" data-execution_count="41">
 <details>
 <summary>Define evaluation metrics</summary>
-<div class="sourceCode" id="cb70"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalized Discounted Cummulative Gain</span></span>
+<div class="sourceCode" id="cb70"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalized Discounted Cumulative Gain</span></span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ndcg(cond, pred, k<span class="op">=</span><span class="dv">5</span>):</span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute normalized discounted cumulative gain at k = `k' of list</span></span>
@@ -3619,13 +3619,13 @@ tr_full-set item-features matrix has 22771 rows, 45605 columns, 124622 non-zero 
 <pre><code>for all users:</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean HR@k: 0.359826</code></pre>
+<pre><code>    mean HR@k: 0.359949</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean NDCG: 0.265683</code></pre>
+<pre><code>    mean NDCG: 0.266091</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean reciprocal rank: 0.242416</code></pre>
+<pre><code>    mean reciprocal rank: 0.244247</code></pre>
 </div>
 </div>
 <p>Note that there are users in the test set, which were not in the training set (a “cold start” situation). Below we consider two sets of users: (1) those that appear in both train and test, and (2) those that appear only in the test set.</p>
@@ -3644,13 +3644,13 @@ tr_full-set item-features matrix has 22771 rows, 45605 columns, 124622 non-zero 
 <pre><code>for users present both in training set and in testing set:</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean HR@k: 0.362740</code></pre>
+<pre><code>    mean HR@k: 0.362443</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean NDCG: 0.268417</code></pre>
+<pre><code>    mean NDCG: 0.268839</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean reciprocal rank: 0.243823</code></pre>
+<pre><code>    mean reciprocal rank: 0.243671</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="48">
@@ -3668,13 +3668,13 @@ tr_full-set item-features matrix has 22771 rows, 45605 columns, 124622 non-zero 
 <pre><code>for testing-set users not present in training set:</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean HR@k: 0.359433</code></pre>
+<pre><code>    mean HR@k: 0.359613</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean NDCG: 0.265314</code></pre>
+<pre><code>    mean NDCG: 0.265721</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>    mean reciprocal rank: 0.243640</code></pre>
+<pre><code>    mean reciprocal rank: 0.242637</code></pre>
 </div>
 </div>
 <p>Note the (slight) difference in accuracy metrics between the two groups of users above.</p>
@@ -3723,13 +3723,13 @@ Practice
 <span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="sc">{}</span><span class="st">: </span><span class="sc">{:f}</span><span class="st">"</span>.<span class="bu">format</span>(s, f(_cond, _pred)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-stdout">
-<pre><code>mean HR@k: 0.313025</code></pre>
+<pre><code>mean HR@k: 0.313491</code></pre>
 </div>
 <div class="cell-output-stdout">
 <pre><code>mean NDCG: 0.219207</code></pre>
 </div>
 <div class="cell-output-stdout">
-<pre><code>mean reciprocal rank: 0.212120</code></pre>
+<pre><code>mean reciprocal rank: 0.212912</code></pre>
 </div>
 </div>
 <p>Notice the difference in these accuracy metrics compared to the those associated with the LightFM model.</p>
@@ -4707,7 +4707,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb96-954"><a href="#cb96-954" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb96-957"><a href="#cb96-957" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
 <span id="cb96-958"><a href="#cb96-958" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: show</span></span>
-<span id="cb96-959"><a href="#cb96-959" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Set hyper-parmaters"</span></span>
+<span id="cb96-959"><a href="#cb96-959" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Set hyper-parameters"</span></span>
 <span id="cb96-960"><a href="#cb96-960" aria-hidden="true" tabindex="-1"></a>hyper <span class="op">=</span> {</span>
 <span id="cb96-961"><a href="#cb96-961" aria-hidden="true" tabindex="-1"></a>    <span class="st">"dim"</span>:      <span class="dv">50</span>,</span>
 <span id="cb96-962"><a href="#cb96-962" aria-hidden="true" tabindex="-1"></a>    <span class="st">"loss"</span>:     <span class="st">"bpr"</span>, <span class="co"># Bayesian personalized ranking</span></span>
@@ -4775,7 +4775,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb96-1032"><a href="#cb96-1032" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
 <span id="cb96-1033"><a href="#cb96-1033" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Define evaluation metrics"</span></span>
 <span id="cb96-1034"><a href="#cb96-1034" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb96-1035"><a href="#cb96-1035" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalized Discounted Cummulative Gain</span></span>
+<span id="cb96-1035"><a href="#cb96-1035" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalized Discounted Cumulative Gain</span></span>
 <span id="cb96-1036"><a href="#cb96-1036" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ndcg(cond, pred, k<span class="op">=</span><span class="dv">5</span>):</span>
 <span id="cb96-1037"><a href="#cb96-1037" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb96-1038"><a href="#cb96-1038" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute normalized discounted cumulative gain at k = `k' of list</span></span>

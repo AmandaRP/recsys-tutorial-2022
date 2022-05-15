@@ -882,7 +882,7 @@ therefore assume LightFM's default values. More information is available
 
 ```{python}
 #| code-fold: show
-#| code-summary: "Set hyper-parmaters"
+#| code-summary: "Set hyper-parameters"
 hyper = {
     "dim":      50,
     "loss":     "bpr", # Bayesian personalized ranking
@@ -950,7 +950,7 @@ def n_avail_cpu():
 ```{python}
 #| code-summary: "Define evaluation metrics"
 
-# Normalized Discounted Cummulative Gain
+# Normalized Discounted Cumulative Gain
 def ndcg(cond, pred, k=5):
     """
     Compute normalized discounted cumulative gain at k = `k' of list
