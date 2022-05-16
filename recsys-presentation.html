@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.230">
+  <meta name="generator" content="quarto-0.9.412">
+
   <meta name="author" content="Amanda Peterson">
   <meta name="dcterms.date" content="2022-05-20">
   <title>Tutorial: Recommender Systems</title>
@@ -19,7 +20,6 @@
     ul.task-list{list-style: none;}
   </style>
   <link rel="stylesheet" href="recsys-presentation_files/libs/revealjs/dist/theme/quarto.css" id="theme">
-
   <script src="recsys-presentation_files/libs/clipboard/clipboard.min.js"></script>
   <script src="recsys-presentation_files/libs/quarto-html/tabby.min.js"></script>
   <script src="recsys-presentation_files/libs/quarto-html/popper.min.js"></script>
@@ -42,7 +42,7 @@
   }
 
   .callout.callout-style-simple { 
-    padding: 0em 0.7em;
+    padding: 0em 0.5em;
     border-left: solid #acacac .3rem;
     border-right: solid 1px silver;
     border-top: solid 1px silver;
@@ -153,8 +153,7 @@
     display: none !important;
   }
 
-  .callout.callout-captioned .callout-body > :last-child,
-  .callout.callout-captioned .callout-body > div > :last-child {
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
     margin-bottom: 0.5rem;
   }
 
@@ -528,15 +527,29 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </div>
 </div><div class="column" style="width:40%;">
 <p><font size="6px"> A hybrid model inspired by support vector machines (SVM) and factorization models. </font></p>
-<p><font size="5px"> <span class="math display">\[
+<p><font size="5px"></font></p><font size="5px">
+<p><span class="math display">\[
 \hat{r}_{ij} = w_o + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n x_i x_j {\bf v}_i \cdot {\bf v}_j
-\]</span></font></p><font size="5px">
+\]</span></p>
 </font><p><font size="5px"></font></p>
 </div>
 </div>
 
 <aside><div>
 <p><a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf">Factorization Machines</a>. 2010. IEEE International Conference on Data Mining. Steffen Rendle.</p>
+</div></aside></section>
+<section id="learn-to-rank-ltr" class="slide level2" data-transition="none">
+<h2>Learn to Rank (LTR)</h2>
+<p>Loss functions for “learning to rank” as opposed to minimizing prediction error:</p>
+<ul>
+<li>Bayesian Personalized Ranking (BPR)</li>
+<li>Weighted Approximate-Rank Pairwise (WARP)</li>
+</ul>
+
+<aside><div>
+<p><a href="https://arxiv.org/pdf/1205.2618.pdf">Bayesian Personalized Ranking from Implicit Feedback</a>. 2009. Rendle, Freudenthaler, Gantner, and Schmidt-Thieme. Proceedings of the twenty-fifth conference on uncertainty in artificial intelligence.</p>
+<p><a href="http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf">WSABIE: Scaling Up To Large Vocabulary Image Annotation</a>. 2011. Weston, Bengio, and Usunier. Proceedings of the International Joint Conference on Artificial Intelligence, IJCAI</p>
+<p><a href="https://www.ee.columbia.edu/~ronw/pubs/recsys2013-kaos.pdf">Learning to Rank Recommendations with the k-Order Statistic Loss</a>. 2013. Weston, Yee, and Weiss. Proceedings of the 2013 ACM Conference on Recommender Systems.</p>
 </div></aside></section>
 <section id="section-5" class="slide level2" data-transition="none" data-auto-animate="true">
 <h2 data-id="quarto-animate-title"></h2>
@@ -886,7 +899,8 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <div class="callout-content">
 <p><span class="math display">\[
 AP@k = \frac{1}{m} ∑_{i=1}^k P(i) * rel(i)
-\]</span> where <span class="math inline">\(P(i)\)</span> is the precision at <span class="math inline">\(i\)</span> of the <span class="math inline">\(i^{th}\)</span> item, <span class="math inline">\(rel(i)\)</span> is the relevance of the <span class="math inline">\(i^{th}\)</span> item (0 or 1), and <span class="math inline">\(m=min(k, \text{number of relevant items in full item space})\)</span>.</p>
+\]</span></p>
+<p>where <span class="math inline">\(P(i)\)</span> is the precision at <span class="math inline">\(i\)</span> of the <span class="math inline">\(i^{th}\)</span> item, <span class="math inline">\(rel(i)\)</span> is the relevance of the <span class="math inline">\(i^{th}\)</span> item (0 or 1), and <span class="math inline">\(m=min(k, \text{number of relevant items in full item space})\)</span>.</p>
 </div>
 </div>
 </div>
@@ -921,8 +935,8 @@ NDCG@k = \frac{DCG_k}{IDCG_k}, \text{ where } DCG_k =  \sum_{i=1}^k \frac{rel(i)
 <p><strong>Mean Reciprocal Rank</strong></p>
 </div>
 <div class="callout-content">
-<p>Let <span class="math inline">\(u\)</span> be a user in the set of users <span class="math inline">\(U\)</span>. Let <span class="math inline">\(r_u\)</span> be the rank of the first relevant item for user <span class="math inline">\(u\)</span>. Then,<br>
-<span class="math display">\[
+<p>Let <span class="math inline">\(u\)</span> be a user in the set of users <span class="math inline">\(U\)</span>. Let <span class="math inline">\(r_u\)</span> be the rank of the first relevant item for user <span class="math inline">\(u\)</span>. Then,</p>
+<p><span class="math display">\[
 MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 \]</span></p>
 </div>
@@ -1080,7 +1094,6 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
   <script src="recsys-presentation_files/libs/revealjs/dist/reveal.js"></script>
-
   <!-- reveal.js plugins -->
   <script src="recsys-presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
@@ -1088,12 +1101,13 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
   <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
   <script src="recsys-presentation_files/libs/revealjs/plugin/notes/notes.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/search/search.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
-
 
   <script>
 
@@ -1107,11 +1121,10 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
-
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true},
 'smaller': false,
-
+ 
         // Display controls in the bottom right corner
         controls: false,
 
@@ -1331,7 +1344,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
       })();
     </script>
 
-    <script type="application/javascript">
+    <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
       tabsets.forEach(function(tabset) {
@@ -1349,7 +1362,10 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
         button.blur();
         // flash "checked"
         button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
         setTimeout(function() {
+          button.setAttribute("title", currentTitle);
           button.classList.remove('code-copy-button-checked');
         }, 1000);
         // clear code selection

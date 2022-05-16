@@ -296,6 +296,26 @@ $$
 [Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf). 2010. IEEE International Conference on Data Mining. Steffen Rendle.
 :::
 
+
+
+## Learn to Rank (LTR) {transition="none"}
+
+Loss functions for "learning to rank" as opposed to minimizing prediction error:
+
+- Bayesian Personalized Ranking (BPR)
+- Weighted Approximate-Rank Pairwise (WARP)
+
+
+::: aside
+[Bayesian Personalized Ranking from Implicit Feedback](https://arxiv.org/pdf/1205.2618.pdf). 2009. Rendle, Freudenthaler, Gantner, and Schmidt-Thieme.  Proceedings of the twenty-fifth conference on uncertainty in artificial intelligence.
+
+[WSABIE: Scaling Up To Large Vocabulary Image Annotation](http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf). 2011. Weston, Bengio, and Usunier. Proceedings of the International Joint Conference on Artificial Intelligence, IJCAI 
+
+[Learning to Rank Recommendations with the k-Order Statistic Loss](https://www.ee.columbia.edu/~ronw/pubs/recsys2013-kaos.pdf). 2013. Weston, Yee, and Weiss. Proceedings of the 2013 ACM Conference on Recommender Systems. 
+
+:::
+
+
 ## {transition="none" auto-animate=true}
 
 ![](images/nick_pentreath_timeline.png){fig-align="center" width=70%} 
