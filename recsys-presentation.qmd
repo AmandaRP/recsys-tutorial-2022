@@ -910,8 +910,5 @@ Questions?
 
 <center>
 
-Slides are available at: 
-
-[https://amandarp.github.io/recsys-tutorial-2022/recsys-presentation.html](https://amandarp.github.io/recsys-tutorial-2022/recsys-presentation.html)
 
 </center>
