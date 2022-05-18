@@ -9,7 +9,7 @@ format:
     #theme: dark
     footer: "SCADS 2022 RecSys Tutorial"
     navigation-mode: linear
-    transition: slide
+    transition: fade
     background-transition: fade
 #header-includes: \usepackage{amsmath}
 ---
@@ -18,7 +18,7 @@ format:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Outline
+## Outline {transition="slide-in"}
 
 </br>
 
@@ -78,7 +78,7 @@ Collaborative + Content Filtering
 
 **Implicit Feedback**: Actions taken by the user which can be used infer preferences about products (e.g. click data, dwell time, purchases)
 
-## User-item Rating Matrix {transition="slide-in none-out"}
+## User-item Rating Matrix {transition="none-out"}
 
 ![](images/user_item_matrix.png)
 
@@ -101,7 +101,7 @@ Examples:
 
 ![Items represented as blue nodes (bottom). Users represented as pink nodes (top). User-item interactions represented by an edge. Edges colored according to a particular user feature.](images/bipartite.png)
 
-## Recommender Technology Timeline {transition="slide-in none-out" auto-animate=true}
+## Recommender Technology Timeline {transition="none-out" auto-animate=true}
 
 ![](images/nick_pentreath_timeline.png) 
 
@@ -145,7 +145,7 @@ Examples:
 
 - **Goal**: Find user latent vector, $p_i \in R^f$, and item latent factor vector,
 $q_i \in R^f$, for each user and item. User's rating of the $j^{th}$ item: 
-$\hat{r}_{ij} = q_i^T p_i$
+$\hat{r}_{ij} = q_j^T p_i$
 
 - **Possible Solution**: Compute the SVD of the user-item "matrix".
 
@@ -186,7 +186,7 @@ $\hat{r}_{ij} = q_i^T p_i$
 
 - **Goal**: Find user latent vector, $p_i \in \mathbb{R}^f$, and item latent factor vector,
 $q_i \in \mathbb{R}^f$, for each user and item. User's rating of the $j^{th}$ item: 
-$\hat{r}_{ij} = q_i^T p_i$
+$\hat{r}_{ij} = q_j^T p_i$
 
 
 - **Better Solution**: Model ratings and solve via stochastic gradient decent.
@@ -365,7 +365,7 @@ learning work in the main part of the conference.
 
 
 
-## 
+## {transition="slide-in"}
 
 <br>
 
@@ -561,7 +561,7 @@ ACM Conference on Recommender Systems (RecSys 2019). Yi et al.
 <br><br>
 [Deep Learning based Recommender System: A Survey and New Perspectives](https://arxiv.org/pdf/1707.07435.pdf). 2018. ACM Comput. Surv. 1, 1, Article 1. Zhang et al.
 
-## 
+## {transition="slide-in"}
 
 <br><br>
 
@@ -569,19 +569,8 @@ ACM Conference on Recommender Systems (RecSys 2019). Yi et al.
 **News Recommendation**
 :::
 
-## MIND
 
-<br><br>
-
-We're working with the **Mi**crosoft **N**ews **D**ataset this summer! 
-
-::: aside
-
-[MIND: A Large-scale Dataset for News Recommendation](https://msnews.github.io/assets/doc/ACL2020_MIND.pdf). ACL 2020. Wu et al.
-
-:::
-
-## Challenges of News Recommendation {transition="slide-in none-out"}
+## Challenges of News Recommendation {transition="none-out"}
 
 (@) **Severe cold start problem**: New articles posted continuously. Usefulness of articles diminishes quickly. 
 
@@ -612,6 +601,22 @@ Image sourced from the [MIND paper](https://msnews.github.io/assets/doc/ACL2020_
 (@) **Overly personalized** news feeds give can give a narrow view of the world.
 
 The last point can be a result of over-emphasis on prediction accuracy. Beyond-accuracy metrics may help.
+
+## MIND
+
+**Mi**crosoft **N**ews **D**ataset, created for the research of news recommendation. 
+
+- **behaviors**:	The click histories and impression logs of users
+- **news**:	The information of news articles
+- **entity embeddings**:	The embeddings of entities in news extracted from knowledge graph
+- **relation embedding**:	The embeddings of relations between entities extracted from knowledge graph
+
+::: aside
+
+[MIND: A Large-scale Dataset for News Recommendation](https://msnews.github.io/assets/doc/ACL2020_MIND.pdf). ACL 2020. Wu et al. See also the [MIND GitHub repo](https://github.com/msnews/msnews.github.io/blob/811c3da00f028ad7737d8c8e131770e04ffe6346/assets/doc/introduction.md).
+
+:::
+
 
 
 ## NRMS
@@ -648,7 +653,7 @@ The last point can be a result of over-emphasis on prediction accuracy. Beyond-a
 :::
 
 
-## 
+## {transition="slide-in"}
 
 <br><br><br>
 
@@ -833,9 +838,9 @@ It's important to use the same implementation when comparing models.
 
 
 
-## 
+## {transition="slide-in"}
 
-<br><br><br>
+<br><br><br> 
 
 ::: r-fit-text
 Final Thoughts
@@ -844,11 +849,11 @@ Final Thoughts
 ## Tips
 
 - **Ranking vs retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates..
-- **Sampling negative examples**: Weight items by popularity. This will better penalize popular items that can be recommended 
+- **Sampling negative examples**: Weight items by popularity. This will train the model to focus on less "popular" items, creating a more "personzlized" list of recommendations. 
 
 ## More Tips
 
-Personalized recommendations in conjunction with other types of recommendations can provide a more satisfying experience.
+Personalized recommendations in conjunction with other types of recommendations can provide a satisfying user experience.
 
 ![](images/ui_sketch.png){fig-align='center'}
 
@@ -905,6 +910,8 @@ Questions?
 
 <center>
 
-Slides are available at: TODO
+Slides are available at: 
+
+[https://amandarp.github.io/recsys-tutorial-2022/recsys-presentation.html](https://amandarp.github.io/recsys-tutorial-2022/recsys-presentation.html)
 
 </center>

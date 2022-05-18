@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-0.9.412">
-
+  <meta name="generator" content="quarto-0.9.230">
   <meta name="author" content="Amanda Peterson">
   <meta name="dcterms.date" content="2022-05-20">
   <title>Tutorial: Recommender Systems</title>
@@ -20,6 +19,7 @@
     ul.task-list{list-style: none;}
   </style>
   <link rel="stylesheet" href="recsys-presentation_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+
   <script src="recsys-presentation_files/libs/clipboard/clipboard.min.js"></script>
   <script src="recsys-presentation_files/libs/quarto-html/tabby.min.js"></script>
   <script src="recsys-presentation_files/libs/quarto-html/popper.min.js"></script>
@@ -42,7 +42,7 @@
   }
 
   .callout.callout-style-simple { 
-    padding: 0em 0.5em;
+    padding: 0em 0.7em;
     border-left: solid #acacac .3rem;
     border-right: solid 1px silver;
     border-top: solid 1px silver;
@@ -153,7 +153,8 @@
     display: none !important;
   }
 
-  .callout.callout-captioned .callout-body > .callout-content > :last-child {
+  .callout.callout-captioned .callout-body > :last-child,
+  .callout.callout-captioned .callout-body > div > :last-child {
     margin-bottom: 0.5rem;
   }
 
@@ -328,7 +329,7 @@
   <p class="date">May 20, 2022</p>
 </section>
 
-<section id="outline" class="slide level2">
+<section id="outline" class="slide level2" data-transition="slide-in">
 <h2>Outline</h2>
 <p><br></p>
 <ul>
@@ -381,7 +382,7 @@
 
 <img data-src="images/star_rating.jpg" class="r-stretch"><p><strong>Implicit Feedback</strong>: Actions taken by the user which can be used infer preferences about products (e.g.&nbsp;click data, dwell time, purchases)</p>
 </section>
-<section id="user-item-rating-matrix" class="slide level2" data-transition="slide-in none-out">
+<section id="user-item-rating-matrix" class="slide level2" data-transition="none-out">
 <h2>User-item Rating Matrix</h2>
 
 <img data-src="images/user_item_matrix.png" class="r-stretch"></section>
@@ -403,7 +404,7 @@
 <h2>User-Item Matrix as a Bipartite Graph</h2>
 
 <img data-src="images/bipartite.png" class="r-stretch quarto-figure-center"><p class="caption">Items represented as blue nodes (bottom). Users represented as pink nodes (top). User-item interactions represented by an edge. Edges colored according to a particular user feature.</p></section>
-<section id="recommender-technology-timeline" class="slide level2" data-transition="slide-in none-out" data-auto-animate="true">
+<section id="recommender-technology-timeline" class="slide level2" data-transition="none-out" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">Recommender Technology Timeline</h2>
 
 <img data-src="images/nick_pentreath_timeline.png" class="r-stretch"><p><a href="https://youtu.be/y_TzOOCJqxI">Presentation by Nick Pentreath at the 2018 Spark + AI Summit</a></p>
@@ -440,7 +441,7 @@
 <p><font size="5px"></font></p><font size="5px">
 <ul>
 <li class="fragment"><p>“Matrix Factorization”, a.k.a. latent factor model</p></li>
-<li class="fragment"><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in R^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in R^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_i^T p_i\)</span></p></li>
+<li class="fragment"><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in R^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in R^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
 <li class="fragment"><p><strong>Possible Solution</strong>: Compute the SVD of the user-item “matrix”.</p></li>
 <li class="fragment"><p><strong>Issue</strong>: How to impute missing values?</p></li>
 </ul>
@@ -466,7 +467,7 @@
 </div><div class="column" style="width:65%;">
 <p><font size="5px"></font></p><font size="5px">
 <ul>
-<li><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in \mathbb{R}^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in \mathbb{R}^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_i^T p_i\)</span></p></li>
+<li><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in \mathbb{R}^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in \mathbb{R}^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
 <li><p><strong>Better Solution</strong>: Model ratings and solve via stochastic gradient decent.</p></li>
 </ul>
 <p><span class="math display">\[
@@ -527,10 +528,9 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </div>
 </div><div class="column" style="width:40%;">
 <p><font size="6px"> A hybrid model inspired by support vector machines (SVM) and factorization models. </font></p>
-<p><font size="5px"></font></p><font size="5px">
-<p><span class="math display">\[
+<p><font size="5px"> <span class="math display">\[
 \hat{r}_{ij} = w_o + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n x_i x_j {\bf v}_i \cdot {\bf v}_j
-\]</span></p>
+\]</span></font></p><font size="5px">
 </font><p><font size="5px"></font></p>
 </div>
 </div>
@@ -589,7 +589,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </font><p><font size="6px"></font></p>
 </div>
 </section>
-<section id="section-7" class="slide level2">
+<section id="section-7" class="slide level2" data-transition="slide-in">
 <h2></h2>
 <p><br></p>
 <div class="r-fit-text">
@@ -751,22 +751,14 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <h2>Additional Reading: Deep Learning for RecSys</h2>
 <p><br><br> <a href="https://arxiv.org/pdf/1707.07435.pdf">Deep Learning based Recommender System: A Survey and New Perspectives</a>. 2018. ACM Comput. Surv. 1, 1, Article 1. Zhang et al.</p>
 </section>
-<section id="section-8" class="slide level2">
+<section id="section-8" class="slide level2" data-transition="slide-in">
 <h2></h2>
 <p><br><br></p>
 <div class="r-fit-text">
 <p><strong>News Recommendation</strong></p>
 </div>
 </section>
-<section id="mind" class="slide level2">
-<h2>MIND</h2>
-<p><br><br></p>
-<p>We’re working with the <strong>Mi</strong>crosoft <strong>N</strong>ews <strong>D</strong>ataset this summer!</p>
-
-<aside><div>
-<p><a href="https://msnews.github.io/assets/doc/ACL2020_MIND.pdf">MIND: A Large-scale Dataset for News Recommendation</a>. ACL 2020. Wu et al.</p>
-</div></aside></section>
-<section id="challenges-of-news-recommendation" class="slide level2" data-transition="slide-in none-out">
+<section id="challenges-of-news-recommendation" class="slide level2" data-transition="none-out">
 <h2>Challenges of News Recommendation</h2>
 <ol class="example" type="1">
 <li><strong>Severe cold start problem</strong>: New articles posted continuously. Usefulness of articles diminishes quickly.</li>
@@ -798,6 +790,19 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </ol>
 <p>The last point can be a result of over-emphasis on prediction accuracy. Beyond-accuracy metrics may help.</p>
 </section>
+<section id="mind" class="slide level2">
+<h2>MIND</h2>
+<p><strong>Mi</strong>crosoft <strong>N</strong>ews <strong>D</strong>ataset, created for the research of news recommendation.</p>
+<ul>
+<li><strong>behaviors</strong>: The click histories and impression logs of users</li>
+<li><strong>news</strong>: The information of news articles</li>
+<li><strong>entity embeddings</strong>: The embeddings of entities in news extracted from knowledge graph</li>
+<li><strong>relation embedding</strong>: The embeddings of relations between entities extracted from knowledge graph</li>
+</ul>
+
+<aside><div>
+<p><a href="https://msnews.github.io/assets/doc/ACL2020_MIND.pdf">MIND: A Large-scale Dataset for News Recommendation</a>. ACL 2020. Wu et al.&nbsp;See also the <a href="https://github.com/msnews/msnews.github.io/blob/811c3da00f028ad7737d8c8e131770e04ffe6346/assets/doc/introduction.md">MIND GitHub repo</a>.</p>
+</div></aside></section>
 <section id="nrms" class="slide level2">
 <h2>NRMS</h2>
 <div class="columns">
@@ -824,7 +829,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <aside><div>
 
 </div></aside></section>
-<section id="section-9" class="slide level2">
+<section id="section-9" class="slide level2" data-transition="slide-in">
 <h2></h2>
 <p><br><br><br></p>
 <div class="r-fit-text">
@@ -899,8 +904,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <div class="callout-content">
 <p><span class="math display">\[
 AP@k = \frac{1}{m} ∑_{i=1}^k P(i) * rel(i)
-\]</span></p>
-<p>where <span class="math inline">\(P(i)\)</span> is the precision at <span class="math inline">\(i\)</span> of the <span class="math inline">\(i^{th}\)</span> item, <span class="math inline">\(rel(i)\)</span> is the relevance of the <span class="math inline">\(i^{th}\)</span> item (0 or 1), and <span class="math inline">\(m=min(k, \text{number of relevant items in full item space})\)</span>.</p>
+\]</span> where <span class="math inline">\(P(i)\)</span> is the precision at <span class="math inline">\(i\)</span> of the <span class="math inline">\(i^{th}\)</span> item, <span class="math inline">\(rel(i)\)</span> is the relevance of the <span class="math inline">\(i^{th}\)</span> item (0 or 1), and <span class="math inline">\(m=min(k, \text{number of relevant items in full item space})\)</span>.</p>
 </div>
 </div>
 </div>
@@ -935,8 +939,8 @@ NDCG@k = \frac{DCG_k}{IDCG_k}, \text{ where } DCG_k =  \sum_{i=1}^k \frac{rel(i)
 <p><strong>Mean Reciprocal Rank</strong></p>
 </div>
 <div class="callout-content">
-<p>Let <span class="math inline">\(u\)</span> be a user in the set of users <span class="math inline">\(U\)</span>. Let <span class="math inline">\(r_u\)</span> be the rank of the first relevant item for user <span class="math inline">\(u\)</span>. Then,</p>
-<p><span class="math display">\[
+<p>Let <span class="math inline">\(u\)</span> be a user in the set of users <span class="math inline">\(U\)</span>. Let <span class="math inline">\(r_u\)</span> be the rank of the first relevant item for user <span class="math inline">\(u\)</span>. Then,<br>
+<span class="math display">\[
 MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 \]</span></p>
 </div>
@@ -1018,7 +1022,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 </div>
 </div>
 </section>
-<section id="section-12" class="slide level2">
+<section id="section-12" class="slide level2" data-transition="slide-in">
 <h2></h2>
 <p><br><br><br></p>
 <div class="r-fit-text">
@@ -1029,12 +1033,12 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 <h2>Tips</h2>
 <ul>
 <li><strong>Ranking vs retrieval</strong>: If there are too many items to score, run a query to obtain a user’s “candidate” recommended items. Use RecSys model to rank the candidates..</li>
-<li><strong>Sampling negative examples</strong>: Weight items by popularity. This will better penalize popular items that can be recommended</li>
+<li><strong>Sampling negative examples</strong>: Weight items by popularity. This will train the model to focus on less “popular” items, creating a more “personzlized” list of recommendations.</li>
 </ul>
 </section>
 <section id="more-tips" class="slide level2">
 <h2>More Tips</h2>
-<p>Personalized recommendations in conjunction with other types of recommendations can provide a more satisfying experience.</p>
+<p>Personalized recommendations in conjunction with other types of recommendations can provide a satisfying user experience.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="images/ui_sketch.png"></p>
@@ -1083,7 +1087,8 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 <p>Questions?</p>
 </div>
 <center>
-<p>Slides are available at: TODO</p>
+<p>Slides are available at:</p>
+<p><a href="https://amandarp.github.io/recsys-tutorial-2022/recsys-presentation.html">https://amandarp.github.io/recsys-tutorial-2022/recsys-presentation.html</a></p>
 </center>
 <div class="footer footer-default">
 <p>SCADS 2022 RecSys Tutorial</p>
@@ -1094,6 +1099,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
   <script src="recsys-presentation_files/libs/revealjs/dist/reveal.js"></script>
+
   <!-- reveal.js plugins -->
   <script src="recsys-presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
@@ -1101,13 +1107,12 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
   <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
-  
-
   <script src="recsys-presentation_files/libs/revealjs/plugin/notes/notes.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/search/search.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
   <script src="recsys-presentation_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
 
   <script>
 
@@ -1121,10 +1126,11 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 'autoAnimateEasing': "ease",
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
+
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true},
 'smaller': false,
- 
+
         // Display controls in the bottom right corner
         controls: false,
 
@@ -1248,7 +1254,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'slide',
+        transition: 'fade',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
@@ -1344,7 +1350,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
       })();
     </script>
 
-    <script id="quarto-html-after-body" type="application/javascript">
+    <script type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
       tabsets.forEach(function(tabset) {
@@ -1362,10 +1368,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
         button.blur();
         // flash "checked"
         button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
         setTimeout(function() {
-          button.setAttribute("title", currentTitle);
           button.classList.remove('code-copy-button-checked');
         }, 1000);
         // clear code selection
