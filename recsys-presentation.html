@@ -719,7 +719,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </figure>
 </div>
 <aside class="notes">
-<p>From the DCN-V2 paper: “The off-diagonal block corresponds to crosses that are known to be important, suggesting the effectiveness of DCN-V2. The diagonal block represents selfinteraction (<span class="math inline">\(x^2\)</span>’s). Subplot (b) shows each block’s Frobenius norm and indicates some strong interactions learned, e.g., Gender x UserId, MovieId x UserId.”</p>
+<p>From the DCN-V2 paper: “The off-diagonal block corresponds to crosses that are known to be important, suggesting the effectiveness of DCN-V2. The diagonal block represents self interaction (<span class="math inline">\(x^2\)</span>’s). Subplot (b) shows each block’s Frobenius norm and indicates some strong interactions learned, e.g., Gender x UserId, MovieId x UserId.”</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -742,7 +742,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </figure>
 </div>
 </div><div class="column" style="width:40%;">
-<p><br>Used for item retreival (as opposed to ranking).</p>
+<p><br>Used for item retrieval (as opposed to ranking).</p>
 </div>
 </div>
 
@@ -1035,7 +1035,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 <h2>Tips</h2>
 <ul>
 <li><strong>Ranking vs retrieval</strong>: If there are too many items to score, run a query to obtain a user’s “candidate” recommended items. Use RecSys model to rank the candidates.</li>
-<li><strong>Sampling negative examples</strong>: Weight items by popularity. This will train the model to focus on less “popular” items, creating a more “personzlized” list of recommendations.</li>
+<li><strong>Sampling negative examples</strong>: Weight items by popularity. This will train the model to focus on less “popular” items, creating a more “personalized” list of recommendations.</li>
 </ul>
 </section>
 <section id="more-tips" class="slide level2">

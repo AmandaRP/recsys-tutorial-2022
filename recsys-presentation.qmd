@@ -537,7 +537,7 @@ block represents the Frobenius norm of each matrix block.](images/explain.png){h
 
 ::: {.notes}
 From the DCN-V2 paper: "The off-diagonal block corresponds to crosses that are known to be important, suggesting the effectiveness of DCN-V2. The diagonal 
-block represents selfinteraction ($x^2$'s). Subplot (b) shows each block’s Frobenius norm and indicates some strong interactions learned, 
+block represents self interaction ($x^2$'s). Subplot (b) shows each block’s Frobenius norm and indicates some strong interactions learned, 
 e.g., Gender x UserId, MovieId x UserId."
 :::
 
@@ -552,7 +552,7 @@ e.g., Gender x UserId, MovieId x UserId."
 
 :::
 ::: {.column width="40%"}
-<br>Used for item retreival (as opposed to ranking).
+<br>Used for item retrieval (as opposed to ranking).
 :::
 ::::
 
@@ -857,7 +857,7 @@ Final Thoughts
 ## Tips
 
 - **Ranking vs retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates.
-- **Sampling negative examples**: Weight items by popularity. This will train the model to focus on less "popular" items, creating a more "personzlized" list of recommendations. 
+- **Sampling negative examples**: Weight items by popularity. This will train the model to focus on less "popular" items, creating a more "personalized" list of recommendations. 
 
 ## More Tips
 
