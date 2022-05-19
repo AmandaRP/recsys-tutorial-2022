@@ -472,7 +472,7 @@
 <p><font size="5px"></font></p><font size="5px">
 <ul>
 <li><p><strong>Goal</strong>: Find user latent factor vector, <span class="math inline">\(p_i \in \mathbb{R}^f\)</span>, and item latent factor vector, <span class="math inline">\(q_j \in \mathbb{R}^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
-<li><p><strong>Better Solution</strong>: Model ratings and solve via stochastic gradient decent.</p></li>
+<li><p><strong>Better Solution</strong>: Model ratings and solve via stochastic gradient decent or alternating least squares.</p></li>
 </ul>
 <p><span class="math display">\[
 min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|| q_j ||^2 + || p_i ||^2)
@@ -504,7 +504,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <p><strong>Enhancements</strong>:</p>
 <ul>
 <li>Incorporate global and main (user, item) effects</li>
-<li>Incorporate weights</li>
+<li>Incorporate confidence weights for implicit feedback</li>
 <li>Model as a function of time</li>
 <li>Ensemble many models</li>
 </ul>
@@ -602,6 +602,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </section>
 <section id="matrix-factorization-in-a-deep-learning-framework" class="slide level2">
 <h2>Matrix Factorization in a Deep Learning Framework</h2>
+<p><br></p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
@@ -611,14 +612,27 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </div>
 </div><div class="column" style="width:50%;">
 <div>
-<ul>
-<li class="fragment">Use sigmoid prediction function and binary cross-entropy (log loss) for binary feedback</li>
-<li class="fragment">Use linear regression prediction function and MSE loss for 5-star ratings</li>
-</ul>
+<p>Loss function: MSE</p>
 </div>
 </div>
 </div>
 </section>
+<section id="ncf" class="slide level2">
+<h2>NCF</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/ncf.png" height="350"></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Previous RecSys Model for <a href="https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.">MLPerf</a></li>
+<li>Collaborative filtering only (no side features)</li>
+</ul>
+</div>
+</div>
+
+<aside><div>
+<p><a href="https://arxiv.org/pdf/1708.05031.pdf">Neural Collaborative Filtering</a>. 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He et. al.</p>
+</div></aside></section>
 <section id="wide-and-deep" class="slide level2">
 <h2>Wide and Deep</h2>
 <div class="columns">
@@ -639,22 +653,6 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 
 <aside><div>
 <p><a href="https://arxiv.org/pdf/1606.07792.pdf">Wide &amp; Deep Learning for Recommender Systems</a>. 2016. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. Heng-Tze Cheng et. al.</p>
-</div></aside></section>
-<section id="ncf" class="slide level2">
-<h2>NCF</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="images/ncf.png" height="350"></p>
-</div><div class="column" style="width:50%;">
-<ul>
-<li>Previous RecSys Model for <a href="https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.">MLPerf</a></li>
-<li>Collaborative filtering only (no side features)</li>
-</ul>
-</div>
-</div>
-
-<aside><div>
-<p><a href="https://arxiv.org/pdf/1708.05031.pdf">Neural Collaborative Filtering</a>. 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He et. al.</p>
 </div></aside></section>
 <section id="deepfm" class="slide level2">
 <h2>DeepFM</h2>
@@ -734,8 +732,8 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
           display:block!important;
       }</style></aside>
 </section>
-<section id="terminology-two-tower-sysetms" class="slide level2">
-<h2>Terminology: Two-tower Sysetms</h2>
+<section id="terminology-two-tower-systems" class="slide level2">
+<h2>Terminology: Two-tower Systems</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
 <div class="quarto-figure quarto-figure-center">
@@ -1036,7 +1034,7 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 <section id="tips" class="slide level2">
 <h2>Tips</h2>
 <ul>
-<li><strong>Ranking vs retrieval</strong>: If there are too many items to score, run a query to obtain a user’s “candidate” recommended items. Use RecSys model to rank the candidates..</li>
+<li><strong>Ranking vs retrieval</strong>: If there are too many items to score, run a query to obtain a user’s “candidate” recommended items. Use RecSys model to rank the candidates.</li>
 <li><strong>Sampling negative examples</strong>: Weight items by popularity. This will train the model to focus on less “popular” items, creating a more “personzlized” list of recommendations.</li>
 </ul>
 </section>
@@ -1076,14 +1074,6 @@ MRR = \frac{1}{|U|}\sum_{u\in U} \frac{1}{r_u}.
 <li><p><a href="https://doi.org/10.3390/info12060232">A Comprehensive Survey of Knowledge Graph-Based Recommender Systems: Technologies, Development, and Contributions</a>. 2021. MDPI Information Journal. Chicaiza and Valdiviezo-Diaz.</p></li>
 </ul>
 </font><p><font size="6px"></font></p>
-</section>
-<section id="code" class="slide level2">
-<h2>Code</h2>
-<p><br></p>
-<ul>
-<li><p>Microsoft GitHub Repo: <a href="https://github.com/microsoft/recommenders">https://github.com/microsoft/recommenders</a></p></li>
-<li><p>Tensorflow: <a href="https://www.tensorflow.org/recommenders">https://www.tensorflow.org/recommenders</a></p></li>
-</ul>
 </section>
 <section id="section-13" class="slide level2">
 <h2></h2>

@@ -193,7 +193,7 @@ $q_j \in \mathbb{R}^f$, for each user and item. User's rating of the $j^{th}$ it
 $\hat{r}_{ij} = q_j^T p_i$
 
 
-- **Better Solution**: Model ratings and solve via stochastic gradient decent.
+- **Better Solution**: Model ratings and solve via stochastic gradient decent or alternating least squares.
 
 $$
 min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|| q_j ||^2 + || p_i ||^2)
@@ -243,7 +243,7 @@ $$
 **Enhancements**:
 
 - Incorporate global and main (user, item) effects
-- Incorporate weights
+- Incorporate confidence weights for implicit feedback 
 - Model as a function of time
 - Ensemble many models
 
@@ -379,6 +379,8 @@ learning work in the main part of the conference.
 
 ## Matrix Factorization in a Deep Learning Framework
 
+<br>
+
 :::: {.columns}
 
 ::: {.column width="50%"}
@@ -388,35 +390,13 @@ learning work in the main part of the conference.
 ::: {.column width="50%"}
 
 ::: {.incremental}
-- Use sigmoid prediction function and binary cross-entropy (log loss) for binary feedback
-- Use linear regression prediction function and MSE loss for 5-star ratings
+
+Loss function: MSE
 :::
 
 :::
 ::::
 
-## Wide and Deep
-
-:::: {.columns}
-
-::: {.column width="60%"}
-![](images/wide_and_deep.png){height=300 fig-alight='center'}
-:::
-
-::: {.column width="40%"}
-
-- Model from Google 
-- Memorization + Generalization
-- Example: <font size="6px">App recommendation. Input: Item indices, user side & context info. Output: Binary (indicating app installation)</font>
-
-:::
-::::
-
-::: aside
-
-[Wide & Deep Learning for Recommender Systems](https://arxiv.org/pdf/1606.07792.pdf). 2016. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. Heng-Tze Cheng et. al.
-
-:::
 
 
 
@@ -440,6 +420,30 @@ learning work in the main part of the conference.
 ::: aside
 
 [Neural Collaborative Filtering](https://arxiv.org/pdf/1708.05031.pdf). 2017. Proceedings of the 26th International Conference on World Wide Web. Xiangnan He et. al.
+
+:::
+
+
+## Wide and Deep
+
+:::: {.columns}
+
+::: {.column width="60%"}
+![](images/wide_and_deep.png){height=300 fig-alight='center'}
+:::
+
+::: {.column width="40%"}
+
+- Model from Google 
+- Memorization + Generalization
+- Example: <font size="6px">App recommendation. Input: Item indices, user side & context info. Output: Binary (indicating app installation)</font>
+
+:::
+::::
+
+::: aside
+
+[Wide & Deep Learning for Recommender Systems](https://arxiv.org/pdf/1606.07792.pdf). 2016. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016). Association for Computing Machinery. Heng-Tze Cheng et. al.
 
 :::
 
@@ -539,7 +543,7 @@ e.g., Gender x UserId, MovieId x UserId."
 
 
 
-## Terminology: Two-tower Sysetms
+## Terminology: Two-tower Systems
 
 :::: {.columns}
 
@@ -852,7 +856,7 @@ Final Thoughts
 
 ## Tips
 
-- **Ranking vs retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates..
+- **Ranking vs retrieval**: If there are too many items to score, run a query to obtain a user's "candidate" recommended items. Use RecSys model to rank the candidates.
 - **Sampling negative examples**: Weight items by popularity. This will train the model to focus on less "popular" items, creating a more "personzlized" list of recommendations. 
 
 ## More Tips
@@ -896,14 +900,6 @@ and Contributions](https://doi.org/10.3390/info12060232). 2021. MDPI Information
 
 </font>
 
-
-## Code 
-
-<br>
-
-- Microsoft GitHub Repo: [https://github.com/microsoft/recommenders](https://github.com/microsoft/recommenders)
-
-- Tensorflow: [https://www.tensorflow.org/recommenders](https://www.tensorflow.org/recommenders)
 
 
 ## 
