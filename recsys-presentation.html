@@ -343,6 +343,10 @@
 </section>
 <section id="why-recommender-systems" class="slide level2">
 <h2>Why Recommender Systems?</h2>
+
+<img data-src="images/simpson_recsys.png" class="r-stretch quarto-figure-center"></section>
+<section id="why-recommender-systems-1" class="slide level2">
+<h2>Why Recommender Systems?</h2>
 <blockquote>
 <p>“The most exciting, the most powerful artificial intelligence systems space for the next couple of decades is recommender systems. They’re going to have the biggest impact on our society because they affect how the information is received, how we learn, what we think, how we communicate. These algorithms are controlling us and we have to really think deeply as engineers about how to speak up and think about their social implications.”</p>
 </blockquote>
@@ -441,7 +445,7 @@
 <p><font size="5px"></font></p><font size="5px">
 <ul>
 <li class="fragment"><p>“Matrix Factorization”, a.k.a. latent factor model</p></li>
-<li class="fragment"><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in R^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in R^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
+<li class="fragment"><p><strong>Goal</strong>: Find user latent factor vector, <span class="math inline">\(p_i \in R^f\)</span>, and item latent factor vector, <span class="math inline">\(q_j \in R^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
 <li class="fragment"><p><strong>Possible Solution</strong>: Compute the SVD of the user-item “matrix”.</p></li>
 <li class="fragment"><p><strong>Issue</strong>: How to impute missing values?</p></li>
 </ul>
@@ -467,7 +471,7 @@
 </div><div class="column" style="width:65%;">
 <p><font size="5px"></font></p><font size="5px">
 <ul>
-<li><p><strong>Goal</strong>: Find user latent vector, <span class="math inline">\(p_i \in \mathbb{R}^f\)</span>, and item latent factor vector, <span class="math inline">\(q_i \in \mathbb{R}^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
+<li><p><strong>Goal</strong>: Find user latent factor vector, <span class="math inline">\(p_i \in \mathbb{R}^f\)</span>, and item latent factor vector, <span class="math inline">\(q_j \in \mathbb{R}^f\)</span>, for each user and item. User’s rating of the <span class="math inline">\(j^{th}\)</span> item: <span class="math inline">\(\hat{r}_{ij} = q_j^T p_i\)</span></p></li>
 <li><p><strong>Better Solution</strong>: Model ratings and solve via stochastic gradient decent.</p></li>
 </ul>
 <p><span class="math display">\[

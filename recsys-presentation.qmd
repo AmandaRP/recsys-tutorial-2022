@@ -31,6 +31,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Why Recommender Systems?
 
+![](images/simpson_recsys.png){fig-align='center'}
+
+## Why Recommender Systems?
+
 > "The most exciting, the most powerful artificial intelligence systems space
 for the next couple of decades is recommender systems. They're going to have 
 the biggest impact on our society because they affect how the information is
@@ -143,8 +147,8 @@ Examples:
 
 - "Matrix Factorization", a.k.a. latent factor model
 
-- **Goal**: Find user latent vector, $p_i \in R^f$, and item latent factor vector,
-$q_i \in R^f$, for each user and item. User's rating of the $j^{th}$ item: 
+- **Goal**: Find user latent factor vector, $p_i \in R^f$, and item latent factor vector,
+$q_j \in R^f$, for each user and item. User's rating of the $j^{th}$ item: 
 $\hat{r}_{ij} = q_j^T p_i$
 
 - **Possible Solution**: Compute the SVD of the user-item "matrix".
@@ -184,8 +188,8 @@ $\hat{r}_{ij} = q_j^T p_i$
 
 <font size="5px">
 
-- **Goal**: Find user latent vector, $p_i \in \mathbb{R}^f$, and item latent factor vector,
-$q_i \in \mathbb{R}^f$, for each user and item. User's rating of the $j^{th}$ item: 
+- **Goal**: Find user latent factor vector, $p_i \in \mathbb{R}^f$, and item latent factor vector,
+$q_j \in \mathbb{R}^f$, for each user and item. User's rating of the $j^{th}$ item: 
 $\hat{r}_{ij} = q_j^T p_i$
 
 
