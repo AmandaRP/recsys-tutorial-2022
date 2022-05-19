@@ -910,8 +910,8 @@ performance as per the stopping criterion `hyper["stop_crit"]` (defined
 below). Note that training will likely take considerably longer if
 early-stopping is enabled.
 
-The LifghtFM module does not provide access to the loss function, so
-earlier stopping will be based on an accuracy-based metric.
+The LightFM module does not provide access to the loss function values, so
+early-stopping will be based on an accuracy-based metric.
 
 ```{python}
 #| code-summary: "Define functions used for early stopping"
