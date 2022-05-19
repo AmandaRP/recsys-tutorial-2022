@@ -542,7 +542,7 @@ for each user present in the data-set,
     user_1 [     1     0  ...      0]
     user_2 |     0     1  ...      0|
      ...   |   ...   ...  ...    ...|.
-    user_m [     0     0    0      1]
+    user_m [     0     0  ...      1]
 
 ```{python}
 #| code-summary: "Assemble identity block of user-features matrices"
@@ -590,7 +590,7 @@ divided by the total number of items in the user's log---let there be
             item_1         item_2 ...     item_n
     user_1 [1/k_user_1          0 ... 1/k_user_1]
     user_2 |         0          0 ... 1/k_user_2|
-     ...   |   ...            ... ...        ...|.
+     ...   |   ...            ... ...        ...|
     user_m [1/k_user_m 1/k_user_m ...          0]
 
 ```{python}
@@ -687,8 +687,8 @@ for each item present in the data-set,
             item_1 item_2 ... item_n
     item_1 [     1     0  ...      0]
     item_2 |     0     1  ...      0|
-     ...   |   ...   ...  ...    ...|.
-    item_n [     0     0    0      1]
+     ...   |   ...   ...  ...    ...|
+    item_n [     0     0  ...      1]
 
 ```{python}
 #| code-summary: "Assemble identity block of item-features matrices"
