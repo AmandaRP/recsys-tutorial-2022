@@ -113,7 +113,6 @@ import zipfile
 Let's define a random seed for the sake of reproducibility.
 
 ```{python}
-#| code-fold: show
 #| code-summary: "Set seed"
 seed = 1
 set_seed(seed)
@@ -915,7 +914,6 @@ early-stopping will be based on an accuracy-based metric.
 
 ```{python}
 #| code-summary: "Define functions used for early stopping"
-#| code-fold: show
 
 # For early-stopping based on normalized discounted cumulative gain
 def mean_ndcg(cond, pred):
@@ -949,6 +947,7 @@ def n_avail_cpu():
 
 ```{python}
 #| code-summary: "Define evaluation metrics"
+#| code-fold: show
 
 # Normalized Discounted Cumulative Gain
 def ndcg(cond, pred, k=5):
@@ -999,7 +998,6 @@ def recip_rank(rel, pred):
 ```
 
 ```{python}
-#| code-fold: show
 #| code-summary: "Run to enable early-stopping"
 #hyper["stop_crit"] = mean_ndcg
 ```
