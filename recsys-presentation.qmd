@@ -284,7 +284,7 @@ $$
 ::: {.column width="40%"}
 
 <font size="6px">
-A hybrid model inspired by support vector machines (SVM) and factorization models.
+Hybrid model inspired by support vector machines (SVM) and matrix factorization.
 </font>
 
 <font size="5px">
@@ -410,8 +410,13 @@ Loss function: MSE
 :::
 
 ::: {.column width="50%"}
+
+::: {.incremental}
+
 - Previous RecSys Model for [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.)
 - Collaborative filtering only (no side features)
+
+:::
 
 :::
 
@@ -460,7 +465,7 @@ Loss function: MSE
 ::: {.column width="40%"}
 - Model from Huawei
 - Inspired by Factorization Machines
-- Example: <font size="6px">[Criteo dataset](https://www.kaggle.com/competitions/criteo-display-ad-challenge/data) (13 integer features, 26 categorical features, binary labels.)</font>
+- Example: <font size="6px">[Criteo dataset](https://www.kaggle.com/competitions/criteo-display-ad-challenge/data) (13 integer-valued features, 26 categorical features, binary labels)</font>
 
 :::
 

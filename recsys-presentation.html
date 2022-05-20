@@ -531,7 +531,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 </figure>
 </div>
 </div><div class="column" style="width:40%;">
-<p><font size="6px"> A hybrid model inspired by support vector machines (SVM) and factorization models. </font></p>
+<p><font size="6px"> Hybrid model inspired by support vector machines (SVM) and matrix factorization. </font></p>
 <p><font size="5px"> <span class="math display">\[
 \hat{r}_{ij} = w_o + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n x_i x_j {\bf v}_i \cdot {\bf v}_j
 \]</span></font></p><font size="5px">
@@ -623,10 +623,12 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <div class="column" style="width:50%;">
 <p><img data-src="images/ncf.png" height="350"></p>
 </div><div class="column" style="width:50%;">
+<div>
 <ul>
-<li>Previous RecSys Model for <a href="https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.">MLPerf</a></li>
-<li>Collaborative filtering only (no side features)</li>
+<li class="fragment">Previous RecSys Model for <a href="https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/#:~:text=MLPerf%20is%20a%20consortium%20of,all%20conducted%20under%20prescribed%20conditions.">MLPerf</a></li>
+<li class="fragment">Collaborative filtering only (no side features)</li>
 </ul>
+</div>
 </div>
 </div>
 
@@ -663,7 +665,7 @@ min_{\substack{p,q}} \sum_{(i,j) \in \kappa} (r_{ij} - q_j^T p_i)^2 + \lambda (|
 <ul>
 <li>Model from Huawei</li>
 <li>Inspired by Factorization Machines</li>
-<li>Example: <font size="6px"><a href="https://www.kaggle.com/competitions/criteo-display-ad-challenge/data">Criteo dataset</a> (13 integer features, 26 categorical features, binary labels.)</font></li>
+<li>Example: <font size="6px"><a href="https://www.kaggle.com/competitions/criteo-display-ad-challenge/data">Criteo dataset</a> (13 integer-valued features, 26 categorical features, binary labels)</font></li>
 </ul>
 </div>
 </div>
